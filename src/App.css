@@ -457,3 +457,16 @@ nav button.active {
   width: auto;
   padding: 6px 10px;
 }
+
+/* ============ 通用工具栏与按钮风格 ============ */
+.toolbar { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.toolbar-right { display:flex; align-items:center; gap:12px; }
+.segmented { display:inline-flex; gap:8px; background:var(--surface-hover); padding:6px; border:1px solid var(--border); border-radius: 999px; box-shadow: var(--shadow-sm); }
+.segmented .seg { padding:6px 12px; border-radius: 999px; background: transparent; border: none; color: var(--text-secondary); }
+.segmented .seg.active { background:white; color: var(--primary); box-shadow: var(--shadow-sm); }
+.btn-pill { padding:6px 14px; border-radius: 999px; background:white; border:1px solid var(--border); color: var(--text-secondary); }
+.btn-pill.primary { color:white; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); border-color: transparent; }
+.btn-ghost { background: var(--surface); border:1px solid var(--border); color: var(--text-secondary); border-radius: var(--radius-md); padding:6px 12px; }
+.btn-icon { width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius: 8px; background: var(--surface); }
+.pill { display:inline-block; padding:4px 10px; border:1px solid var(--border); border-radius:999px; color: var(--text-secondary); background:white; }
+.divider { height:1px; background: var(--border); margin:12px 0; }

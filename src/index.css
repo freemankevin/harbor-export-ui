@@ -430,51 +430,58 @@ tbody tr:hover {
   background: rgba(71, 85, 105, 0.7);
 }
 
-/* ============ 工具类 ============ */
-.text-muted {
-  color: var(--text-muted);
+/* ============ Switch 开关 ============ */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
 }
 
-.text-center {
-  text-align: center;
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
-.mt-sm { margin-top: var(--space-sm); }
-.mt-md { margin-top: var(--space-md); }
-.mt-lg { margin-top: var(--space-lg); }
-.mt-xl { margin-top: var(--space-xl); }
-
-.mb-sm { margin-bottom: var(--space-sm); }
-.mb-md { margin-bottom: var(--space-md); }
-.mb-lg { margin-bottom: var(--space-lg); }
-.mb-xl { margin-bottom: var(--space-xl); }
-
-/* ============ 响应式 ============ */
-@media (max-width: 768px) {
-  .form,
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .actions,
-  .btn-group {
-    flex-direction: column;
-  }
-  
-  button {
-    width: 100%;
-  }
-}
-/* 代码/等宽字体 */
-code, pre, kbd, samp {
-  font-family: var(--font-code);
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--text-disabled);
+  transition: .4s;
 }
 
-/* Font Awesome 图标字体（若未加载将回退） */
-.fa, .fas, .far {
-  font-family: var(--font-icon-free);
-  font-weight: 900;
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .4s;
 }
-.fab {
-  font-family: var(--font-icon-brands);
+
+input:checked + .slider {
+  background-color: var(--primary);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(16px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
