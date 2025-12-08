@@ -18,7 +18,7 @@
 .sidebar {
   position: sticky;
   top: 24px;
-  height: fit-content;
+  height: calc(100vh - 48px);
   background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(20px);
   border: 1px solid var(--border);
@@ -438,7 +438,7 @@ nav button.active {
   }
 }
 .sidebar-footer {
-  margin-top: 12px;
+  margin-top: auto;
   border-top: 1px solid var(--border);
   padding-top: 12px;
   display: grid;
