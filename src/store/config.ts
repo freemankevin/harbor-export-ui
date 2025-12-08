@@ -2,7 +2,6 @@ export type HarborConfig = {
   harborUrl: string
   username: string
   password: string
-  operator?: string
   id?: string
 }
 

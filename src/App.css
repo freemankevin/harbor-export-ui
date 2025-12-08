@@ -234,6 +234,14 @@ nav button.active {
   color: var(--error-light);
 }
 
+/* ============ 进度条与大提示 ============ */
+.meter { height: 10px; background: #0d1117; border:1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.meter > span { display:block; height:100%; background: linear-gradient(90deg, var(--primary), var(--accent)); }
+
+.notice { margin-top:16px; padding:16px 18px; border-radius: var(--radius-md); font-size: 16px; display:flex; align-items:center; gap:10px }
+.notice.ok { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--success-light); }
+.notice.err { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--error-light); }
+
 /* ============ 表格容器 ============ */
 .table-container {
   margin-top: 20px;

@@ -20,6 +20,9 @@ export const HarborAPI = {
   repositories(cfg: HarborConfig, project: string) {
     return post<{ repositories: Repository[] }>('/api/harbor/repositories', { ...cfg, project })
   },
+  tags(cfg: HarborConfig, project: string, repo: string) {
+    return post<{ tags: string[] }>('/api/harbor/repository/tags', { ...cfg, project, repo })
+  },
   search(cfg: HarborConfig, query: string) {
     return post<{ results: { name: string; project_name: string }[] }>('/api/harbor/search', { ...cfg, query })
   }
