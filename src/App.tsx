@@ -48,8 +48,8 @@ function App() {
           </div>
         </div>
       </aside>
-      <div>
-        <main>
+      <div style={{ height: 'calc(100vh - 48px)', display: 'flex', flexDirection: 'column' }}>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           {tab === 'settings' && <Settings />}
           {tab === 'explorer' && <Explorer />}
           {tab === 'monitor' && <Monitor />}

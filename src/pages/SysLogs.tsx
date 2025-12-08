@@ -53,7 +53,7 @@ export default function SysLogs() {
   } : {
     display: 'flex',
     flexDirection: 'column' as const,
-    height: 'calc(100vh - 140px)', // 适配剩余高度
+    height: '100%', // 填满父容器
     padding: 0,
     overflow: 'hidden' // 确保圆角不被子元素遮挡
   }
@@ -217,7 +217,8 @@ export default function SysLogs() {
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: 'inset 0 6px 12px rgba(0,0,0,0.4)' // 内部顶部阴影
+        boxShadow: 'inset 0 6px 12px rgba(0,0,0,0.4)', // 内部顶部阴影
+        borderBottom: '1px solid var(--border)' // 显式分割线
       }}>
         <pre 
           ref={logRef} 
@@ -240,23 +241,34 @@ export default function SysLogs() {
       </div>
 
       <div style={{ 
-        padding: '12px 24px', 
+        padding: '16px 24px', 
         borderTop: '1px solid var(--border)',
         display: 'flex',
         justifyContent: 'flex-end',
         gap: 12,
         background: 'var(--surface)',
-        boxShadow: '0 -4px 12px rgba(0,0,0,0.05)',
         zIndex: 10
       }}>
         <div style={{ flex: 1 }}></div>
         <button 
           onClick={scrollToTop}
           style={{ 
-            background: 'transparent',
+            background: 'var(--surface)',
             border: '1px solid var(--border)',
-            borderRadius: 20,
-            padding: '6px 20px'
+            borderRadius: 16, // 圆角加大
+            padding: '6px 20px',
+            color: 'var(--text-primary)',
+            fontSize: 12,
+            transition: 'all 0.2s',
+            cursor: 'pointer'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--primary)';
+            e.currentTarget.style.color = 'var(--primary)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'var(--border)';
+            e.currentTarget.style.color = 'var(--text-primary)';
           }}
         >
           回到顶部
@@ -264,10 +276,22 @@ export default function SysLogs() {
         <button 
           onClick={scrollToBottom}
           style={{ 
-            background: 'transparent',
+            background: 'var(--surface)',
             border: '1px solid var(--border)',
-            borderRadius: 20,
-            padding: '6px 20px'
+            borderRadius: 16,
+            padding: '6px 20px',
+            color: 'var(--text-primary)',
+            fontSize: 12,
+            transition: 'all 0.2s',
+            cursor: 'pointer'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--primary)';
+            e.currentTarget.style.color = 'var(--primary)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'var(--border)';
+            e.currentTarget.style.color = 'var(--text-primary)';
           }}
         >
           回到底部
@@ -275,11 +299,23 @@ export default function SysLogs() {
         <button 
           onClick={download}
           style={{ 
-            background: '#333',
+            background: '#1e1e1e', // 深黑背景
             color: '#fff',
-            border: '1px solid #444',
-            borderRadius: 20,
-            padding: '6px 20px'
+            border: '1px solid #1e1e1e',
+            borderRadius: 16,
+            padding: '6px 20px',
+            fontSize: 12,
+            fontWeight: 500,
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = '#333';
+            e.currentTarget.style.borderColor = '#333';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = '#1e1e1e';
+            e.currentTarget.style.borderColor = '#1e1e1e';
           }}
         >
           下载日志
