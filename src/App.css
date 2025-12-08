@@ -1,8 +1,9 @@
 /* ============ 主容器 ============ */
 #root {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 24px;
+  max-width: unset;
+  width: 100%;
+  margin: 0;
+  padding: 16px;
 }
 
 /* ============ 布局 ============ */
@@ -25,6 +26,8 @@
   padding: 24px;
   box-shadow: var(--shadow-lg);
   animation: slideRight 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes slideRight {
@@ -55,6 +58,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1;
 }
 
 .sidebar .menu button {
@@ -299,6 +303,20 @@ nav button.active {
   animation: spin 1s linear infinite;
 }
 
+/* ============ 旋转动画（用于加载图标）============ */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner svg {
+  animation: spin 1s linear infinite;
+}
+
 /* ============ 标签样式 ============ */
 .tag {
   display: inline-block;
@@ -309,6 +327,67 @@ nav button.active {
   color: #93c5fd;
   margin-right: 6px;
   margin-bottom: 6px;
+}
+
+/* ============ 镜像中心专用样式 ============ */
+
+/* 滚动条样式优化 */
+.explorer-sidebar::-webkit-scrollbar,
+.explorer-content::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.explorer-sidebar::-webkit-scrollbar-track,
+.explorer-content::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 3px;
+}
+
+.explorer-sidebar::-webkit-scrollbar-thumb,
+.explorer-content::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.5);
+  border-radius: 3px;
+}
+
+.explorer-sidebar::-webkit-scrollbar-thumb:hover,
+.explorer-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.7);
+}
+
+/* 表格悬停效果增强 */
+.explorer-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.explorer-table tbody tr:hover {
+  background: rgba(30, 41, 59, 0.3);
+  transform: translateX(2px);
+}
+
+/* 徽章样式 */
+.badge-public {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  fontSize: 12px;
+  font-weight: 500;
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+}
+
+.badge-private {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  fontSize: 12px;
+  font-weight: 500;
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
 }
 
 /* ============ 响应式 ============ */
@@ -357,4 +436,24 @@ nav button.active {
     flex: 1;
     min-width: 0;
   }
+}
+.sidebar-footer {
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.sidebar-footer .row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.sidebar-footer .row button {
+  width: auto;
+  padding: 6px 10px;
 }

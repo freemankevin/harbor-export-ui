@@ -1,7 +1,20 @@
 import type { HarborConfig } from '../store/config'
 
-export type Project = { name: string; project_id: number; public: boolean }
-export type Repository = { name: string; artifact_count: number; pull_count?: number; tags?: string[] }
+// 更新 Project 类型，添加 repo_count 字段
+export type Project = { 
+  name: string
+  project_id: number
+  public: boolean
+  repo_count?: number  // 新增：项目下的仓库数量
+}
+
+export type Repository = { 
+  name: string
+  artifact_count: number
+  pull_count?: number
+  tags?: string[]
+  update_time?: string  // 新增：更新时间
+}
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), credentials: 'include' })
