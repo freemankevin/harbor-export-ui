@@ -208,9 +208,9 @@ export default function Explorer() {
 
   return (
     <div style={{
-      background: 'rgba(15, 23, 42, 0.7)',
+      background: 'var(--surface)',
       backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(71, 85, 105, 0.3)',
+      border: '1px solid var(--border)',
       borderRadius: '16px',
       minHeight: '700px',
       display: 'flex',
@@ -220,9 +220,9 @@ export default function Explorer() {
     }}>
       {/* 头部标签栏 */}
       <div style={{
-        borderBottom: '1px solid rgba(71, 85, 105, 0.3)',
+        borderBottom: '1px solid var(--border)',
         padding: '20px 24px 0',
-        background: 'rgba(30, 41, 59, 0.3)'
+        background: 'var(--surface-hover)'
       }}>
         <div style={{ display: 'flex', gap: '32px', marginBottom: '-1px' }}>
           <button
@@ -247,16 +247,16 @@ export default function Explorer() {
         {/* 左侧项目列表 */}
         <div style={{
           width: '240px',
-          borderRight: '1px solid rgba(71, 85, 105, 0.3)',
+          borderRight: '1px solid var(--border)',
           padding: '16px 0',
           overflowY: 'auto',
-          background: 'rgba(15, 23, 42, 0.5)'
+          background: 'var(--surface)'
         }}>
           <div style={{
             padding: '0 16px 12px',
             fontSize: '12px',
             fontWeight: 600,
-            color: '#94a3b8',
+            color: 'var(--text-muted)',
             textTransform: 'uppercase',
             letterSpacing: '0.5px'
           }}>
@@ -264,11 +264,11 @@ export default function Explorer() {
           </div>
           
           {loading && projects.length === 0 ? (
-            <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
+            <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-disabled)', fontSize: '14px' }}>
               加载中...
             </div>
           ) : projects.length === 0 ? (
-            <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
+            <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-disabled)', fontSize: '14px' }}>
               暂无项目
             </div>
           ) : (
@@ -292,7 +292,7 @@ export default function Explorer() {
                 }}
                 onMouseEnter={(e) => {
                   if (selectedProject !== project.name) {
-                    e.currentTarget.style.background = 'rgba(30, 41, 59, 0.5)'
+                    e.currentTarget.style.background = 'var(--surface-hover)'
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -313,7 +313,7 @@ export default function Explorer() {
                   </svg>
                   <span style={{
                     fontSize: '13px',
-                    color: selectedProject === project.name ? '#f1f5f9' : '#cbd5e1',
+                    color: selectedProject === project.name ? 'var(--text-primary)' : 'var(--text-secondary)',
                     fontWeight: selectedProject === project.name ? 600 : 400,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -332,11 +332,11 @@ export default function Explorer() {
           {/* 搜索和操作栏 */}
           <div style={{
             padding: '16px 24px',
-            borderBottom: '1px solid rgba(71, 85, 105, 0.3)',
+            borderBottom: '1px solid var(--border)',
             display: 'flex',
             gap: '12px',
             alignItems: 'center',
-            background: 'rgba(30, 41, 59, 0.2)'
+            background: 'var(--surface)'
           }}>
             <div style={{ flex: 1, position: 'relative', maxWidth: '400px' }}>
               <input
@@ -347,10 +347,10 @@ export default function Explorer() {
                 style={{
                   width: '100%',
                   padding: '10px 14px 10px 40px',
-                  background: 'rgba(30, 41, 59, 0.5)',
-                  border: '1px solid rgba(71, 85, 105, 0.3)',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
                   borderRadius: '8px',
-                  color: '#f1f5f9',
+                  color: 'var(--text-primary)',
                   fontSize: '14px'
                 }}
               />
@@ -373,7 +373,7 @@ export default function Explorer() {
               </svg>
             </div>
             
-            <div style={{ fontSize: '13px', color: '#94a3b8' }}>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
               已选择 <span style={{ color: '#3b82f6', fontWeight: 600 }}>{selectedRepos.size}</span> 个镜像
             </div>
 
@@ -439,7 +439,7 @@ export default function Explorer() {
               <div style={{
                 padding: '60px 24px',
                 textAlign: 'center',
-                color: '#64748b'
+                color: 'var(--text-disabled)'
               }}>
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" style={{ margin: '0 auto 16px', opacity: 0.3 }}>
                   <rect x="3" y="3" width="7" height="7"></rect>
@@ -453,7 +453,7 @@ export default function Explorer() {
               <div style={{
                 padding: '60px 24px',
                 textAlign: 'center',
-                color: '#64748b'
+                color: 'var(--text-disabled)'
               }}>
                 <div className="spinner" style={{ width: '48px', height: '48px', margin: '0 auto 16px' }}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -467,7 +467,7 @@ export default function Explorer() {
               <div style={{
                 padding: '60px 24px',
                 textAlign: 'center',
-                color: '#64748b'
+                color: 'var(--text-disabled)'
               }}>
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" style={{ margin: '0 auto 16px', opacity: 0.3 }}>
                   <circle cx="12" cy="12" r="10"></circle>
@@ -487,8 +487,8 @@ export default function Explorer() {
                 <thead style={{
                   position: 'sticky',
                   top: 0,
-                  background: 'rgba(30, 41, 59, 0.95)',
-                  backdropFilter: 'blur(10px)',
+                  background: 'var(--surface-hover)',
+                  backdropFilter: 'none',
                   zIndex: 1
                 }}>
                   <tr>
@@ -497,7 +497,7 @@ export default function Explorer() {
                       textAlign: 'left',
                       fontSize: '12px',
                       fontWeight: 600,
-                      color: '#94a3b8',
+                      color: 'var(--text-muted)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
                       width: '40px'
@@ -514,7 +514,7 @@ export default function Explorer() {
                       textAlign: 'left',
                       fontSize: '12px',
                       fontWeight: 600,
-                      color: '#94a3b8',
+                      color: 'var(--text-muted)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
                       minWidth: '300px'
@@ -526,7 +526,7 @@ export default function Explorer() {
                       textAlign: 'left',
                       fontSize: '12px',
                       fontWeight: 600,
-                      color: '#94a3b8',
+                      color: 'var(--text-muted)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
                       width: '200px'
@@ -538,7 +538,7 @@ export default function Explorer() {
                       textAlign: 'center',
                       fontSize: '12px',
                       fontWeight: 600,
-                      color: '#94a3b8',
+                      color: 'var(--text-muted)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
                       width: '100px'
@@ -550,7 +550,7 @@ export default function Explorer() {
                       textAlign: 'center',
                       fontSize: '12px',
                       fontWeight: 600,
-                      color: '#94a3b8',
+                      color: 'var(--text-muted)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
                       width: '100px'
@@ -562,7 +562,7 @@ export default function Explorer() {
                       textAlign: 'center',
                       fontSize: '12px',
                       fontWeight: 600,
-                      color: '#94a3b8',
+                      color: 'var(--text-muted)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
                       width: '120px'
@@ -598,7 +598,7 @@ export default function Explorer() {
                           transition: 'background 0.2s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(30, 41, 59, 0.3)'
+                          e.currentTarget.style.background = 'var(--surface-hover)'
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background = 'transparent'
@@ -607,7 +607,7 @@ export default function Explorer() {
                         <td style={{
                           padding: '14px 20px',
                           fontSize: '14px',
-                          color: '#cbd5e1'
+                          color: 'var(--text-secondary)'
                         }}>
                           <input
                             type="checkbox"
@@ -619,7 +619,7 @@ export default function Explorer() {
                         <td style={{
                           padding: '14px 16px',
                           fontSize: '14px',
-                          color: '#cbd5e1'
+                          color: 'var(--text-secondary)'
                         }}>
                           <div style={{
                             display: 'flex',
@@ -638,7 +638,7 @@ export default function Explorer() {
                         <td style={{
                           padding: '14px 16px',
                           fontSize: '14px',
-                          color: '#cbd5e1'
+                          color: 'var(--text-secondary)'
                         }}>
                           {isSelected && tags.length > 0 ? (
                             <select
@@ -647,10 +647,10 @@ export default function Explorer() {
                               style={{
                                 width: '100%',
                                 padding: '6px 10px',
-                                background: 'rgba(30, 41, 59, 0.5)',
-                                border: '1px solid rgba(71, 85, 105, 0.3)',
+                                background: 'var(--surface)',
+                                border: '1px solid var(--border)',
                                 borderRadius: '6px',
-                                color: '#f1f5f9',
+                                color: 'var(--text-primary)',
                                 fontSize: '13px',
                                 cursor: 'pointer'
                               }}
@@ -664,10 +664,10 @@ export default function Explorer() {
                               onClick={() => toggleExpandRepo(repo.name)}
                               style={{
                                 padding: '6px 12px',
-                                background: 'rgba(59, 130, 246, 0.1)',
-                                border: '1px solid rgba(59, 130, 246, 0.3)',
+                                background: 'var(--surface)',
+                                border: '1px solid var(--border)',
                                 borderRadius: '6px',
-                                color: '#93c5fd',
+                                color: 'var(--text-primary)',
                                 fontSize: '13px',
                                 cursor: 'pointer',
                                 display: 'flex',
@@ -697,7 +697,7 @@ export default function Explorer() {
                         <td style={{
                           padding: '14px 16px',
                           fontSize: '14px',
-                          color: '#cbd5e1',
+                          color: 'var(--text-secondary)',
                           textAlign: 'center'
                         }}>
                           <span style={{
@@ -721,7 +721,7 @@ export default function Explorer() {
                         <td style={{
                           padding: '14px 16px',
                           fontSize: '14px',
-                          color: '#cbd5e1',
+                          color: 'var(--text-secondary)',
                           textAlign: 'center'
                         }}>
                           {repo.artifact_count || repo.tags?.length || 0}
@@ -729,7 +729,7 @@ export default function Explorer() {
                         <td style={{
                           padding: '14px 16px',
                           fontSize: '14px',
-                          color: '#cbd5e1',
+                          color: 'var(--text-secondary)',
                           textAlign: 'center'
                         }}>
                           {repo.pull_count || 0}
@@ -737,7 +737,7 @@ export default function Explorer() {
                         <td style={{
                           padding: '14px 20px 14px 16px',
                           fontSize: '14px',
-                          color: '#cbd5e1',
+                          color: 'var(--text-secondary)',
                           textAlign: 'center'
                         }}>
                           <button
@@ -745,10 +745,10 @@ export default function Explorer() {
                             disabled={downloading}
                             style={{
                               padding: '6px 16px',
-                              background: 'rgba(59, 130, 246, 0.15)',
-                              border: '1px solid rgba(59, 130, 246, 0.3)',
+                              background: 'var(--surface)',
+                              border: '1px solid var(--border)',
                               borderRadius: '6px',
-                              color: '#93c5fd',
+                              color: 'var(--text-primary)',
                               fontSize: '13px',
                               fontWeight: 500,
                               cursor: downloading ? 'not-allowed' : 'pointer',
@@ -757,14 +757,14 @@ export default function Explorer() {
                             }}
                             onMouseEnter={(e) => {
                               if (!downloading) {
-                                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.25)'
-                                e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)'
+                                e.currentTarget.style.background = 'var(--surface-hover)'
+                                e.currentTarget.style.borderColor = 'var(--primary)'
                               }
                             }}
                             onMouseLeave={(e) => {
                               if (!downloading) {
-                                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.15)'
-                                e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)'
+                                e.currentTarget.style.background = 'var(--surface)'
+                                e.currentTarget.style.borderColor = 'var(--border)'
                               }
                             }}
                           >

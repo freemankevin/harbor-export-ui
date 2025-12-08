@@ -19,7 +19,7 @@
   position: sticky;
   top: 24px;
   height: calc(100vh - 48px);
-  background: rgba(15, 23, 42, 0.7);
+  background: var(--surface);
   backdrop-filter: blur(20px);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -65,8 +65,8 @@
   width: 100%;
   text-align: left;
   padding: 12px 16px;
-  background: rgba(30, 41, 59, 0.3);
-  border: 1px solid transparent;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   color: var(--text-muted);
   font-size: 14px;
@@ -78,7 +78,7 @@
 }
 
 .sidebar .menu button:hover {
-  background: rgba(30, 41, 59, 0.5);
+  background: var(--surface-hover);
   color: var(--text-primary);
   transform: translateX(4px);
 }
@@ -160,7 +160,7 @@ nav button.active {
 /* ============ 面板/卡片 ============ */
 .panel,
 .card {
-  background: rgba(15, 23, 42, 0.7);
+  background: var(--surface);
   backdrop-filter: blur(20px);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -239,7 +239,7 @@ nav button.active {
 }
 
 /* ============ 进度条与大提示 ============ */
-.meter { height: 10px; background: #0d1117; border:1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.meter { height: 10px; background: var(--surface-hover); border:1px solid var(--border); border-radius: 12px; overflow: hidden; }
 .meter > span { display:block; height:100%; background: linear-gradient(90deg, var(--primary), var(--accent)); }
 
 .notice { margin-top:16px; padding:16px 18px; border-radius: var(--radius-md); font-size: 16px; display:flex; align-items:center; gap:10px }
