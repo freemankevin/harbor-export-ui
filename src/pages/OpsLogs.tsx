@@ -126,7 +126,7 @@ export default function OpsLogs() {
                 display: 'flex', 
                 alignItems: 'center', 
                 border: `1px solid ${isFocused ? 'var(--primary)' : 'var(--border)'}`, 
-                borderRadius: 4, 
+                borderRadius: 20, 
                 background: 'var(--surface)',
                 transition: 'all 0.2s',
                 position: 'relative'
@@ -208,7 +208,7 @@ export default function OpsLogs() {
                             marginTop: 4,
                             background: 'var(--surface)',
                             border: '1px solid var(--border)',
-                            borderRadius: 4,
+                            borderRadius: 12,
                             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                             zIndex: 11,
                             width: 160,
@@ -280,11 +280,12 @@ export default function OpsLogs() {
       </div>
       
       <div style={{ flex: 1, overflowX: 'auto', padding: '16px 24px' }}>
-        <table style={{ width:'100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+        <div style={{ border: '1px solid var(--border)', background: 'var(--surface)', borderRadius: 0 }}>
+          <table style={{ width:'100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)' }}>
               <th style={{ padding: '12px 16px', width: 40, background: 'var(--bg-secondary)' }}>
-                <input 
+                <input  
                   type="checkbox" 
                   checked={currentOps.length > 0 && currentOps.every(o => selected.has(ops.indexOf(o)))}
                   onChange={toggleSelectAll}
@@ -296,9 +297,9 @@ export default function OpsLogs() {
               <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 600, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>动作</th>
               <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 600, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>详情</th>
               <th style={{ textAlign:'center', padding: '12px 16px', fontWeight: 600, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)', width: 100 }}>操作</th>
-            </tr>
-          </thead>
-          <tbody>
+              </tr>
+            </thead>
+            <tbody>
             {currentOps.map((r, i)=> {
               const realIndex = ops.indexOf(r)
               const isSelected = selected.has(realIndex)
@@ -372,16 +373,13 @@ export default function OpsLogs() {
                 </tr>
               )
             })}
-            {currentOps.length > 0 && (
-              <tr style={{ height: '1px' }}>
-                <td colSpan={6} style={{ padding: 0, borderBottom: '1px solid var(--border)' }}></td>
-              </tr>
-            )}
+            
             {currentOps.length===0 && <tr><td colSpan={6} style={{ textAlign:'center', padding: 60, color:'var(--text-muted)' }}>
               暂无操作记录
             </td></tr>}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* 分页控件 */}
