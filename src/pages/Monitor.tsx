@@ -22,7 +22,9 @@ export default function Monitor() {
   const disk = info?.disk || {}
   const cpu = info?.cpu || {}
 
-  const Card = ({ title, icon, percent, detail1, detail2, detail3 }: any) => (
+  const Card = ({ title, icon, percent, detail1, detail2, detail3, tooltip }: any) => {
+    const [showTooltip, setShowTooltip] = useState(false)
+    return (
     <div style={{ 
       background: 'var(--surface)', 
       borderRadius: 8, 
@@ -71,9 +73,57 @@ export default function Monitor() {
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)', display:'flex', alignItems:'center', gap:4 }}>
             {detail3} 
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" style={{ opacity:0.6 }}>
-              <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm-.5-9h1v3h-1V5zm0 4h1v2h-1V9z"/>
-            </svg>
+            <div 
+              style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'help' }}
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+            >
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" style={{ opacity:0.6 }}>
+                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm-.5-9h1v3h-1V5zm0 4h1v2h-1V9z"/>
+              </svg>
+              {tooltip && showTooltip && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: '100%',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  marginBottom: 8,
+                  padding: '8px 12px',
+                  background: 'var(--surface)',
+                  color: 'var(--text-primary)',
+                  fontSize: 12,
+                  borderRadius: 4,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  border: '1px solid var(--border)',
+                  zIndex: 10,
+                  width: 'max-content',
+                  maxWidth: 240,
+                  whiteSpace: 'normal',
+                  textAlign: 'left',
+                  lineHeight: 1.5
+                }}>
+                  {tooltip}
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    borderWidth: 6,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--border) transparent transparent transparent'
+                  }} />
+                   <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: '50%',
+                    transform: 'translateX(-50%) translateY(-1px)',
+                    borderWidth: 6,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--surface) transparent transparent transparent'
+                  }} />
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div>
@@ -85,7 +135,7 @@ export default function Monitor() {
         </div>
       </div>
     </div>
-  )
+  )}
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, height: '100%', paddingBottom: 24 }}>
@@ -95,6 +145,7 @@ export default function Monitor() {
         detail1={fmtNum(cpu.count)}
         detail2="Cores"
         detail3="总计"
+        tooltip="服务器 CPU 逻辑核心总数"
         icon={
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
@@ -117,6 +168,7 @@ export default function Monitor() {
         detail1={fmtGB(mem.total)}
         detail2="GiB"
         detail3="总计"
+        tooltip="物理内存总量 (RAM)，已扣除内核预留空间"
         icon={
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
@@ -132,6 +184,7 @@ export default function Monitor() {
         detail1={fmtGB(disk.total)}
         detail2="GiB"
         detail3="总计"
+        tooltip="服务器磁盘分区总容量"
         icon={
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="4" width="20" height="16" rx="4" />
