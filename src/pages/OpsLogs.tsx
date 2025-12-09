@@ -124,7 +124,7 @@ export default function OpsLogs() {
   }
 
   return (
-    <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0 }}>
+    <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'sticky', top: 24, zIndex: 1 }}>
       <div style={{ padding: '24px 24px 0' }}>
         <h2 style={{ fontSize: 14 }}>操作日志</h2>
         <div style={{ marginTop: 16, display: 'flex', gap: 12 }}>
@@ -261,7 +261,7 @@ export default function OpsLogs() {
       
       <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column' }}>
         <table style={{ width:'100%', borderCollapse: 'collapse' }}>
-          <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
+          <thead>
             <tr style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)' }}>
               <th style={{ padding: '12px 16px', width: 40, background: 'var(--bg-secondary)' }}>
                 <input  
