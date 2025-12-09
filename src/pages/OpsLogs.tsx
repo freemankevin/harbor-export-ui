@@ -19,6 +19,8 @@ export default function OpsLogs() {
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
+  const [showPageSizeMenu, setShowPageSizeMenu] = useState(false)
+
   const load = async () => { 
     setLoading(true); 
     const minLoadingDelay = 500;
@@ -355,68 +357,162 @@ export default function OpsLogs() {
           </tbody>
         </table>
 
-        {/* 分页控件 */}
-        <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface)' }}>
+        {/* 分页控件（华为云风格） */}
+        <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, background: 'var(--surface)' }}
+        >
           <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
             总条数: {total} | 已选: {selected.size}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-             <select 
-              value={pageSize} 
-              onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
-              style={{ 
-                padding: '4px 8px', 
-                borderRadius: 0, 
-                border: '1px solid var(--border)', 
-                background: 'var(--surface)', 
-                color: 'var(--text-primary)',
-                fontSize: 13
-              }}
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-            <div style={{ display: 'flex', gap: 4 }}>
-              <button 
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+            {/* 每页条数选择器 */}
+            <div style={{ position: 'relative' }}>
+              <div
+                onClick={() => setShowPageSizeMenu(!showPageSizeMenu)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: 60,
+                  height: 32,
+                  padding: '0 8px',
+                  border: '1px solid #D9D9D9',
+                  borderRadius: 4,
+                  background: '#fff',
+                  cursor: 'pointer',
+                  fontSize: 14,
+                  color: '#333'
+                }}
+              >
+                <span>{pageSize}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" style={{ transform: showPageSizeMenu ? 'rotate(180deg)' : 'none', transition: '0.2s' }}>
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+              {/* 下拉菜单 */}
+              {showPageSizeMenu && (
+                <>
+                  <div style={{ position: 'fixed', inset: 0, zIndex: 10 }} onClick={() => setShowPageSizeMenu(false)} />
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 4px)',
+                      width: '100%',
+                      background: '#fff',
+                      border: '1px solid #E5E5E5',
+                      borderRadius: 4,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                      zIndex: 11
+                    }}
+                  >
+                    {[10, 20, 50].map(size => (
+                      <div
+                        key={size}
+                        onClick={() => {
+                          setPageSize(size)
+                          setPage(1)
+                          setShowPageSizeMenu(false)
+                        }}
+                        style={{
+                          padding: '8px 0',
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          fontSize: 14,
+                          color: pageSize === size ? '#0A59F7' : '#333',
+                          background: pageSize === size ? '#F0F7FF' : '#fff'
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#F5F7FA')}
+                        onMouseLeave={e => (e.currentTarget.style.background = pageSize === size ? '#F0F7FF' : '#fff')}
+                      >
+                        {size}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* 分页按钮 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {/* 上一页 */}
+              <button
                 disabled={page === 1}
                 onClick={() => handlePageChange(page - 1)}
-                style={{ 
-                  padding: '4px 12px', 
-                  border: '1px solid var(--border)', 
-                  borderRadius: 0, 
-                  background: page === 1 ? 'var(--bg-secondary)' : 'var(--surface)',
-                  color: page === 1 ? 'var(--text-disabled)' : 'var(--text-primary)',
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 4,
+                  border: '1px solid #D9D9D9',
+                  background: '#fff',
                   cursor: page === 1 ? 'not-allowed' : 'pointer',
-                  fontSize: 13
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: page === 1 ? '#94a3b8' : '#333',
+                  opacity: 1
                 }}
               >
-                &lt;
+                <span
+                  style={{
+                    fontSize: 16,
+                    lineHeight: '16px',
+                    color: page === 1 ? '#94a3b8' : '#333',
+                    display: 'block',
+                    transform: 'translateY(-1px)'
+                  }}
+                  aria-hidden
+                >
+                  ‹
+                </span>
               </button>
-              <span style={{ 
-                padding: '4px 12px', 
-                border: '1px solid var(--primary)', 
-                borderRadius: 0, 
-                background: 'var(--primary)',
-                color: '#fff',
-                fontSize: 13
-              }}>
-                {page}
-              </span>
-              <button 
-                disabled={page === totalPages || totalPages === 0}
-                onClick={() => handlePageChange(page + 1)}
-                style={{ 
-                  padding: '4px 12px', 
-                  border: '1px solid var(--border)', 
-                  borderRadius: 0, 
-                  background: (page === totalPages || totalPages === 0) ? 'var(--bg-secondary)' : 'var(--surface)',
-                  color: (page === totalPages || totalPages === 0) ? 'var(--text-disabled)' : 'var(--text-primary)',
-                  cursor: (page === totalPages || totalPages === 0) ? 'not-allowed' : 'pointer',
-                  fontSize: 13
+              {/* 当前页 */}
+              <div
+                style={{
+                  minWidth: 32,
+                  height: 32,
+                  padding: '0 8px',
+                  borderRadius: 4,
+                  border: '1px solid #0A59F7',
+                  background: '#E9F1FF',
+                  color: '#0A59F7',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                &gt;
+                {page}
+              </div>
+              {/* 下一页 */}
+              <button
+                disabled={page >= totalPages}
+                onClick={() => handlePageChange(page + 1)}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 4,
+                  border: '1px solid #D9D9D9',
+                  background: '#fff',
+                  cursor: page >= totalPages ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: page >= totalPages ? '#94a3b8' : '#333',
+                  opacity: 1
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 16,
+                    lineHeight: '16px',
+                    color: page >= totalPages ? '#94a3b8' : '#333',
+                    display: 'block',
+                    transform: 'translateY(-1px)'
+                  }}
+                  aria-hidden
+                >
+                  ›
+                </span>
               </button>
             </div>
           </div>
