@@ -25,7 +25,8 @@ function App() {
   return (
     <div className="layout">
       <aside className="sidebar">
-        <div className="title">Harbor Export</div>
+        <div className="title" style={{ marginBottom: 8 }}>Harbor Export</div>
+        <div style={{ height: 1, background: 'var(--border)', margin: '6px 0 8px' }}></div>
         <div className="menu">
           <button className={tab==='settings' ? 'active' : ''} onClick={() => setTab('settings')}>配置管理</button>
           <button className={tab==='explorer' ? 'active' : ''} onClick={() => setTab('explorer')}>镜像中心</button>
@@ -48,7 +49,7 @@ function App() {
           </div>
         </div>
       </aside>
-      <div style={{ minHeight: 'calc(100vh - 48px)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ height: 'calc(100vh - 48px)', display: 'flex', flexDirection: 'column' }}>
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           {tab === 'settings' && <Settings />}
           {tab === 'explorer' && <Explorer />}
