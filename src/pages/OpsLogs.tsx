@@ -124,7 +124,7 @@ export default function OpsLogs() {
   }
 
   return (
-    <div className="panel" style={{ minHeight: 'calc(100vh - 48px)', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' }}>
+    <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0 }}>
       <div style={{ padding: '24px 24px 0' }}>
         <h2 style={{ fontSize: 14 }}>操作日志</h2>
         <div style={{ marginTop: 16, display: 'flex', gap: 12 }}>
@@ -259,9 +259,9 @@ export default function OpsLogs() {
         `}</style>
       </div>
       
-      <div style={{ flex: 1, overflowX: 'auto', padding: '16px 24px', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column' }}>
         <table style={{ width:'100%', borderCollapse: 'collapse' }}>
-          <thead>
+          <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
             <tr style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)' }}>
               <th style={{ padding: '12px 16px', width: 40, background: 'var(--bg-secondary)' }}>
                 <input  
@@ -442,8 +442,8 @@ export default function OpsLogs() {
                   width: 32,
                   height: 32,
                   borderRadius: 4,
-                  border: '1px solid #D9D9D9',
-                  background: '#fff',
+                  border: 'none',
+                  background: 'transparent',
                   cursor: page === 1 ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -468,13 +468,13 @@ export default function OpsLogs() {
               {/* 当前页 */}
               <div
                 style={{
-                  minWidth: 32,
+                  width: 32,
                   height: 32,
-                  padding: '0 8px',
-                  borderRadius: 4,
-                  border: '1px solid #0A59F7',
-                  background: '#E9F1FF',
-                  color: '#0A59F7',
+                  padding: 0,
+                  borderRadius: '50%',
+                  border: '1px solid var(--border)',
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-muted)',
                   fontWeight: 500,
                   display: 'flex',
                   alignItems: 'center',
@@ -491,8 +491,8 @@ export default function OpsLogs() {
                   width: 32,
                   height: 32,
                   borderRadius: 4,
-                  border: '1px solid #D9D9D9',
-                  background: '#fff',
+                  border: 'none',
+                  background: 'transparent',
                   cursor: page >= totalPages ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
