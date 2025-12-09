@@ -17,6 +17,7 @@ export default function OpsLogs() {
   const [showFilterMenu, setShowFilterMenu] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const [selected, setSelected] = useState<Set<number>>(new Set())
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   const load = async () => { 
     setLoading(true); 
@@ -37,7 +38,7 @@ export default function OpsLogs() {
   useEffect(()=> { load() }, [])
   useEffect(()=> { const t = setInterval(load, 5000); return ()=> clearInterval(t) }, [])
 
-  // 过滤
+  // 过滤与排序
   const filteredOps = ops.filter(o => {
     if (!filter) return true
     const term = filter.toLowerCase()
@@ -51,6 +52,10 @@ export default function OpsLogs() {
       (o.action && o.action.toLowerCase().includes(term)) ||
       (o.payload && JSON.stringify(o.payload).toLowerCase().includes(term))
     )
+  }).sort((a, b) => {
+    const timeA = new Date(a.timestamp).getTime();
+    const timeB = new Date(b.timestamp).getTime();
+    return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
   })
 
   // 分页计算
@@ -119,7 +124,7 @@ export default function OpsLogs() {
   return (
     <div className="panel" style={{ minHeight: 'calc(100vh - 48px)', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' }}>
       <div style={{ padding: '24px 24px 0' }}>
-        <h2>操作日志</h2>
+        <h2 style={{ fontSize: 14 }}>操作日志</h2>
         <div style={{ marginTop: 16, display: 'flex', gap: 12 }}>
             <div style={{ 
                 flex: 1, 
@@ -204,7 +209,7 @@ export default function OpsLogs() {
                         <div style={{
                             position: 'absolute',
                             top: '100%',
-                            left: 0,
+                            left: 28,
                             marginTop: 4,
                             background: 'var(--surface)',
                             border: '1px solid var(--border)',
@@ -245,33 +250,6 @@ export default function OpsLogs() {
                     </>
                 )}
             </div>
-
-            {/* 刷新按钮 */}
-            <div 
-                onClick={load}
-                title="刷新日志"
-                style={{
-                    width: 42,
-                    height: 42,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '1px solid var(--border)',
-                    borderRadius: 4,
-                    background: 'var(--surface)',
-                    color: 'var(--text-primary)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.boxShadow = '0 4px 8px rgba(59, 130, 246, 0.2)'; e.currentTarget.style.color = 'var(--primary)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
-            >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={loading ? 'spin' : ''}>
-                    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
-                    <path d="M21 3v5h-5"></path>
-                </svg>
-            </div>
         </div>
         <style>{`
           @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -279,11 +257,10 @@ export default function OpsLogs() {
         `}</style>
       </div>
       
-      <div style={{ flex: 1, overflowX: 'auto', padding: '16px 24px' }}>
-        <div style={{ border: '1px solid var(--border)', background: 'var(--surface)', borderRadius: 0 }}>
-          <table style={{ width:'100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ flex: 1, overflowX: 'auto', padding: '16px 24px', display: 'flex', flexDirection: 'column' }}>
+        <table style={{ width:'100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)' }}>
               <th style={{ padding: '12px 16px', width: 40, background: 'var(--bg-secondary)' }}>
                 <input  
                   type="checkbox" 
@@ -292,14 +269,22 @@ export default function OpsLogs() {
                   style={{ cursor: 'pointer' }}
                 />
               </th>
-              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 600, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>时间</th>
-              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 600, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>操作人</th>
-              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 600, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>动作</th>
-              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 600, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>详情</th>
-              <th style={{ textAlign:'center', padding: '12px 16px', fontWeight: 600, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)', width: 100 }}>操作</th>
-              </tr>
-            </thead>
-            <tbody>
+              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', gap: 4 }} onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}>
+                  时间
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <svg width="8" height="4" viewBox="0 0 8 4" fill={sortOrder === 'asc' ? 'var(--primary)' : 'var(--text-disabled)'}><path d="M4 0L8 4H0L4 0Z"/></svg>
+                    <svg width="8" height="4" viewBox="0 0 8 4" fill={sortOrder === 'desc' ? 'var(--primary)' : 'var(--text-disabled)'}><path d="M4 4L0 0H8L4 4Z"/></svg>
+                  </div>
+                </div>
+              </th>
+              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>操作人</th>
+              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>动作</th>
+              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>详情</th>
+              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)', width: 100 }}>状态</th>
+            </tr>
+          </thead>
+          <tbody>
             {currentOps.map((r, i)=> {
               const realIndex = ops.indexOf(r)
               const isSelected = selected.has(realIndex)
@@ -323,7 +308,7 @@ export default function OpsLogs() {
                     <span style={{ 
                        display: 'inline-block',
                        padding: '2px 8px', 
-                       borderRadius: 4, 
+                       borderRadius: 0, 
                        background: 'rgba(59, 130, 246, 0.1)', 
                        color: '#3b82f6', 
                        fontSize: 12,
@@ -335,37 +320,21 @@ export default function OpsLogs() {
                   <td style={{ padding: '12px 16px', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {renderDetail(r.payload)}
                   </td>
-                  <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                  <td style={{ padding: '12px 16px', textAlign: 'left' }}>
                     {r.success ? (
                       <span style={{ 
                         color: '#10b981', 
-                        display: 'inline-flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        gap: 6,
-                        background: 'rgba(16, 185, 129, 0.1)',
-                        padding: '4px 10px',
-                        borderRadius: 20,
                         fontSize: 12,
-                        fontWeight: 600
+                        fontWeight: 500
                       }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         成功
                       </span>
                     ) : (
                       <span style={{ 
                         color: '#ef4444', 
-                        display: 'inline-flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        gap: 6,
-                        background: 'rgba(239, 68, 68, 0.1)',
-                        padding: '4px 10px',
-                        borderRadius: 20,
                         fontSize: 12,
-                        fontWeight: 600
+                        fontWeight: 500
                       }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         失败
                       </span>
                     )}
@@ -374,77 +343,82 @@ export default function OpsLogs() {
               )
             })}
             
-            {currentOps.length===0 && <tr><td colSpan={6} style={{ textAlign:'center', padding: 60, color:'var(--text-muted)' }}>
+            {currentOps.length > 0 && (
+              <tr style={{ height: '1px' }}>
+                <td colSpan={6} style={{ padding: 0, borderTop: '1px solid var(--border)' }}></td>
+              </tr>
+            )}
+            
+            {currentOps.length===0 && <tr><td colSpan={6} style={{ textAlign:'center', padding: 60, color:'var(--text-muted)', borderBottom: '1px solid var(--border)' }}>
               暂无操作记录
             </td></tr>}
-            </tbody>
-          </table>
-        </div>
-      </div>
+          </tbody>
+        </table>
 
-      {/* 分页控件 */}
-      <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-          总条数: {total} | 已选: {selected.size}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-           <select 
-            value={pageSize} 
-            onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
-            style={{ 
-              padding: '4px 8px', 
-              borderRadius: 4, 
-              border: '1px solid var(--border)', 
-              background: 'var(--surface)', 
-              color: 'var(--text-primary)',
-              fontSize: 13
-            }}
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
-          <div style={{ display: 'flex', gap: 4 }}>
-            <button 
-              disabled={page === 1}
-              onClick={() => handlePageChange(page - 1)}
+        {/* 分页控件 */}
+        <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface)' }}>
+          <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+            总条数: {total} | 已选: {selected.size}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+             <select 
+              value={pageSize} 
+              onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
               style={{ 
-                padding: '4px 12px', 
+                padding: '4px 8px', 
+                borderRadius: 0, 
                 border: '1px solid var(--border)', 
-                borderRadius: 4, 
-                background: page === 1 ? 'var(--bg-secondary)' : 'var(--surface)',
-                color: page === 1 ? 'var(--text-disabled)' : 'var(--text-primary)',
-                cursor: page === 1 ? 'not-allowed' : 'pointer',
+                background: 'var(--surface)', 
+                color: 'var(--text-primary)',
                 fontSize: 13
               }}
             >
-              &lt;
-            </button>
-            <span style={{ 
-              padding: '4px 12px', 
-              border: '1px solid var(--primary)', 
-              borderRadius: 4, 
-              background: 'var(--primary)',
-              color: '#fff',
-              fontSize: 13
-            }}>
-              {page}
-            </span>
-            <button 
-              disabled={page === totalPages || totalPages === 0}
-              onClick={() => handlePageChange(page + 1)}
-              style={{ 
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button 
+                disabled={page === 1}
+                onClick={() => handlePageChange(page - 1)}
+                style={{ 
+                  padding: '4px 12px', 
+                  border: '1px solid var(--border)', 
+                  borderRadius: 0, 
+                  background: page === 1 ? 'var(--bg-secondary)' : 'var(--surface)',
+                  color: page === 1 ? 'var(--text-disabled)' : 'var(--text-primary)',
+                  cursor: page === 1 ? 'not-allowed' : 'pointer',
+                  fontSize: 13
+                }}
+              >
+                &lt;
+              </button>
+              <span style={{ 
                 padding: '4px 12px', 
-                border: '1px solid var(--border)', 
-                borderRadius: 4, 
-                background: (page === totalPages || totalPages === 0) ? 'var(--bg-secondary)' : 'var(--surface)',
-                color: (page === totalPages || totalPages === 0) ? 'var(--text-disabled)' : 'var(--text-primary)',
-                cursor: (page === totalPages || totalPages === 0) ? 'not-allowed' : 'pointer',
+                border: '1px solid var(--primary)', 
+                borderRadius: 0, 
+                background: 'var(--primary)',
+                color: '#fff',
                 fontSize: 13
-              }}
-            >
-              &gt;
-            </button>
+              }}>
+                {page}
+              </span>
+              <button 
+                disabled={page === totalPages || totalPages === 0}
+                onClick={() => handlePageChange(page + 1)}
+                style={{ 
+                  padding: '4px 12px', 
+                  border: '1px solid var(--border)', 
+                  borderRadius: 0, 
+                  background: (page === totalPages || totalPages === 0) ? 'var(--bg-secondary)' : 'var(--surface)',
+                  color: (page === totalPages || totalPages === 0) ? 'var(--text-disabled)' : 'var(--text-primary)',
+                  cursor: (page === totalPages || totalPages === 0) ? 'not-allowed' : 'pointer',
+                  fontSize: 13
+                }}
+              >
+                &gt;
+              </button>
+            </div>
           </div>
         </div>
       </div>
