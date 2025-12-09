@@ -25,8 +25,7 @@ function App() {
   return (
     <div className="layout">
       <aside className="sidebar">
-        <div className="title" style={{ marginBottom: 8 }}>Harbor Export</div>
-        <div style={{ height: 1, background: 'var(--border)', margin: '6px 0 8px' }}></div>
+        <div className="title">容器镜像服务 SWR</div>
         <div className="menu">
           <button className={tab==='settings' ? 'active' : ''} onClick={() => setTab('settings')}>配置管理</button>
           <button className={tab==='explorer' ? 'active' : ''} onClick={() => setTab('explorer')}>镜像中心</button>

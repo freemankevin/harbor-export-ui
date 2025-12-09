@@ -29,6 +29,7 @@
   animation: none;
   display: flex;
   flex-direction: column;
+  font-family: var(--font-body);
 }
 
 @keyframes slideRight {
@@ -45,14 +46,19 @@
 .sidebar .title {
   font-size: 18px;
   font-weight: 700;
-  margin-bottom: 24px;
-  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  display: inline-block;
+}
+
+.sidebar .title::after {
+  content: '';
+  display: block;
+  height: 1px;
+  background: var(--border);
+  margin-top: 6px;
+  width: calc(100% + 12px);
+  transform: translateX(-6px);
 }
 
 .sidebar .menu {
@@ -65,19 +71,17 @@
 .sidebar .menu button {
   width: 100%;
   text-align: left;
-  padding: 10px 0 !important; /* 强制与标题左缘对齐 */
+  padding: 8px 0 8px 16px !important;
   background: transparent;
   border: none;
   border-radius: 0;
   color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
+  font-family: var(--font-body);
   transition: background var(--transition-base), color var(--transition-base);
-  display: flex;
-  align-items: center;
-  gap: 0;
+  display: block;
   position: relative;
-  justify-content: flex-start;
 }
 
 .sidebar .menu button:hover {
@@ -93,7 +97,7 @@
 .sidebar .menu button.active::before {
   content: '';
   position: absolute;
-  left: 0;
+  left: 1px;
   top: 0;
   bottom: 0;
   width: 3px;
