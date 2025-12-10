@@ -232,7 +232,7 @@ select {
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   padding: var(--space-2xl);
-  box-shadow: var(--shadow-lg);
+  box-shadow: none;
   animation: slideUp 0.3s ease-out;
 }
 

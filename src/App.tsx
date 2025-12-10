@@ -10,46 +10,120 @@ function App() {
   const [tab, setTab] = useState<'settings' | 'explorer' | 'monitor' | 'syslog' | 'oplog'>('settings')
   const [theme, setTheme] = useState<'dark' | 'light'>((localStorage.getItem('theme') as 'dark' | 'light') || 'dark')
   const [apiVer, setApiVer] = useState<string>('')
+  const [collapsed, setCollapsed] = useState(false)
+  const [sysOpen, setSysOpen] = useState(false)
 
-  useEffect(()=> {
+  useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
     localStorage.setItem('theme', theme)
   }, [theme])
 
-  useEffect(()=> {
-    fetch('/api/system/info').then(async r=> {
-      const d = await r.json(); if (d?.data?.harbor_api_version) setApiVer(String(d.data.harbor_api_version))
-    }).catch(()=>{})
+  useEffect(() => {
+    fetch('/api/system/info').then(async r => {
+      const d = await r.json()
+      if (d?.data?.harbor_api_version) setApiVer(String(d.data.harbor_api_version))
+    }).catch(() => { })
   }, [])
 
+  const menuItems = [
+    { id: 'settings', label: '配置管理' },
+    { id: 'explorer', label: '镜像中心' }
+  ]
+
   return (
-    <div className="layout">
-      <aside className="sidebar">
+    <div className={`layout ${collapsed ? 'collapsed' : ''}`}>
+      {/* 侧边栏 */}
+      <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+        {/* 折叠按钮 */}
+        <button
+          className="sidebar-collapse-btn"
+          onClick={() => setCollapsed(!collapsed)}
+          title={collapsed ? '展开' : '折叠'}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        {/* 标题 */}
         <div className="title">容器镜像服务 SWR</div>
+
+        {/* 菜单 */}
         <div className="menu">
-          <button className={tab==='settings' ? 'active' : ''} onClick={() => setTab('settings')}>配置管理</button>
-          <button className={tab==='explorer' ? 'active' : ''} onClick={() => setTab('explorer')}>镜像中心</button>
-          <button className={tab==='monitor' ? 'active' : ''} onClick={() => setTab('monitor')}>系统监控</button>
-          <button className={tab==='syslog' ? 'active' : ''} onClick={() => setTab('syslog')}>系统日志</button>
-          <button className={tab==='oplog' ? 'active' : ''} onClick={() => setTab('oplog')}>操作日志</button>
+          {menuItems.map(item => (
+            <button
+              key={item.id}
+              className={tab === item.id ? 'active' : ''}
+              onClick={() => setTab(item.id as any)}
+              title={collapsed ? item.label : undefined}
+            >
+              {item.label}
+            </button>
+          ))}
+
+          <button
+            className={`menu-group-header ${sysOpen ? 'open' : 'closed'}`}
+            onClick={() => setSysOpen(!sysOpen)}
+            title={collapsed ? '系统管理' : undefined}
+          >
+            <span>系统管理</span>
+            <span className="chevron">
+              {sysOpen ? (
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1.5 6 L5 3 L8.5 6" />
+                </svg>
+              ) : (
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1.5 4 L5 7 L8.5 4" />
+                </svg>
+              )}
+            </span>
+          </button>
+
+          {sysOpen && !collapsed && (
+            <div className="menu-group-children">
+              <button
+                className={tab === 'monitor' ? 'active' : ''}
+                onClick={() => setTab('monitor')}
+              >
+                系统监控
+              </button>
+              <button
+                className={tab === 'syslog' ? 'active' : ''}
+                onClick={() => setTab('syslog')}
+              >
+                系统日志
+              </button>
+              <button
+                className={tab === 'oplog' ? 'active' : ''}
+                onClick={() => setTab('oplog')}
+              >
+                操作日志
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* 底部信息 */}
         <div className="sidebar-footer">
-          <div className="row" style={{ cursor:'pointer' }} onClick={()=> setTheme(theme==='dark' ? 'light' : 'dark')}>
-            {theme==='dark' ? (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <div className="row" style={{ cursor: 'pointer' }} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} title="切换主题">
+            {theme === 'dark' ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>
             ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
             )}
-            <span>{theme==='dark' ? '浅色主题' : '深色主题'}</span>
+            <span>{theme === 'dark' ? '浅色主题' : '深色主题'}</span>
           </div>
-          <div className="row">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 0 0 20M12 2a15.3 15.3 0 0 1 0 20"/></svg>
-            <span>Harbor API {apiVer || 'v2.0'}</span>
+          <div className="row" title="API 版本">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 0 0 20M12 2a15.3 15.3 0 0 1 0 20" /></svg>
+            <span>Harbor API V{(apiVer || '2.0').replace(/^v/i, '')}</span>
           </div>
         </div>
       </aside>
-      <div style={{ height: 'calc(100vh - 48px)', display: 'flex', flexDirection: 'column' }}>
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+
+      {/* 主内容区域 */}
+      <div className="main-content" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'auto' }}>
           {tab === 'settings' && <Settings />}
           {tab === 'explorer' && <Explorer />}
           {tab === 'monitor' && <Monitor />}
