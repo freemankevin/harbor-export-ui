@@ -30,7 +30,7 @@ export default function Monitor() {
       borderRadius: 8, 
       border: '1px solid var(--border)',
       padding: 24,
-      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+      boxShadow: 'none',
       display: 'flex',
       flexDirection: 'column',
       gap: 20
@@ -138,7 +138,7 @@ export default function Monitor() {
   )}
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, height: '100%', paddingBottom: 24 }}>
+    <div className="panel" style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 24 }}>
       <Card 
         title="CPU用量"
         percent={cpu.percent || 0}

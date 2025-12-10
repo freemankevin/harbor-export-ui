@@ -15,7 +15,8 @@ export default function ExplorerLayout({ children }: ExplorerLayoutProps) {
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden',
-      boxShadow: 'none'
+      boxShadow: 'none',
+      margin: '78px 16px 16px 8px'
     }}>
       {/* 头部标签栏 */}
       <div style={{

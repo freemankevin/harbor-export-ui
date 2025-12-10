@@ -119,6 +119,10 @@
   margin-left: auto;
 }
 
+.menu-group-header .chevron svg {
+  stroke-width: 0.75px;
+}
+
 .menu-group-header:hover {
   background: var(--surface-hover);
 }
@@ -279,7 +283,7 @@
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
   z-index: 50;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
 
@@ -292,6 +296,7 @@
   width: 14px;
   height: 14px;
   transition: transform 0.3s;
+  stroke-width: 1px;
 }
 
 .sidebar.collapsed .sidebar-collapse-btn svg {
@@ -386,7 +391,7 @@ nav button.active {
   padding: 28px;
   box-shadow: none;
   animation: slideUp 0.3s ease-out;
-  margin: 16px 16px 16px 8px;
+  margin: 78px 16px 16px 8px;
 }
 
 @keyframes slideUp {
