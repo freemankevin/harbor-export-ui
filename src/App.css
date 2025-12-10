@@ -125,6 +125,8 @@
 
 .menu-group-header:hover {
   background: var(--surface-hover);
+  transform: none;
+  box-shadow: none;
 }
 
 .menu-group-children {
@@ -164,12 +166,16 @@
 .sidebar .menu button:hover {
   background: var(--surface-hover);
   color: inherit;
+  transform: none;
+  box-shadow: none;
 }
 
 /* 激活态 */
 .sidebar .menu button.active {
   background: rgba(59, 130, 246, 0.15);
-  border-left: 3px solid var(--primary);
+  box-shadow: inset 3px 0 0 var(--primary);
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .sidebar .menu button.active::before {
@@ -678,4 +684,8 @@ tbody tr:hover {
   .form {
     grid-template-columns: 1fr;
   }
+}
+.menu-group-header.open {
+  color: var(--text-primary);
+  font-weight: 600;
 }
