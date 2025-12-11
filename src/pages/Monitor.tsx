@@ -24,15 +24,31 @@ export default function Monitor() {
     return `${y}/${m}/${day} ${hh}:${mm}:${ss}`
   }
 
-  const load = async () => {
-    try { const i = await SystemAPI.info(); setInfo(i.data) } catch(e) { console.error(e) }
-    try { const h = await SystemAPI.health(); setHealth(h.data) } catch(e) { console.error(e) }
-    setLastCheck(fmtTime(new Date()))
+  const loadAll = async () => {
+    try {
+      const [i, h] = await Promise.all([SystemAPI.info(), SystemAPI.health()])
+      setInfo(i.data)
+      setHealth(h.data)
+      const ts = fmtTime(new Date())
+      setLastCheck(ts)
+      try { localStorage.setItem('monitor_cache', JSON.stringify({ info: i.data, health: h.data, lastCheck: ts })) } catch {}
+    } catch(e) { console.error(e) }
   }
 
-  useEffect(()=> { load() }, [])
   useEffect(()=> {
-    const t = setInterval(load, 5000)
+    try {
+      const raw = localStorage.getItem('monitor_cache')
+      if (raw) {
+        const cached = JSON.parse(raw)
+        if (cached?.info) setInfo(cached.info)
+        if (cached?.health) setHealth(cached.health)
+        if (cached?.lastCheck) setLastCheck(cached.lastCheck)
+      }
+    } catch {}
+    loadAll()
+  }, [])
+  useEffect(()=> {
+    const t = setInterval(loadAll, 5000)
     return () => clearInterval(t)
   }, [])
 
@@ -52,8 +68,8 @@ export default function Monitor() {
   const radarValues = [cpuOk ? 1 : 0, memOk ? 1 : 0, diskOk ? 1 : 0, harborOk ? 1 : 0, serviceOk ? 1 : 0]
   const totalScore = radarValues.reduce((s, v) => s + v * 20, 0)
 
-  type CardProps = { title: string; icon: any; percent: number; detail1: string | number; detail2: string; detail3: string; tooltip?: string }
-  const Card = ({ title, icon, percent, detail1, detail2, detail3, tooltip }: CardProps) => {
+  type CardProps = { title: string; icon: any; percent: number; detail1: string | number; detail2: string; detail3: string; tooltip?: string; loading?: boolean }
+  const Card = ({ title, icon, percent, detail1, detail2, detail3, tooltip, loading }: CardProps) => {
     const [showTooltip, setShowTooltip] = useState(false)
     return (
     <div style={{ 
@@ -64,7 +80,9 @@ export default function Monitor() {
       boxShadow: 'none',
       display: 'flex',
       flexDirection: 'column',
-      gap: 20
+      gap: 20,
+      position: 'relative',
+      opacity: loading ? 0.85 : 1
     }}>
       {/* 头部：图标 + 标题 + 进度条 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -82,9 +100,10 @@ export default function Monitor() {
             <div style={{ 
               width: `${Math.min(percent, 100)}%`, 
               height: '100%', 
-              background: percent > 90 ? '#ef4444' : percent > 75 ? '#f59e0b' : '#65d146', // 绿色
+              background: percent > 90 ? '#ef4444' : percent > 75 ? '#f59e0b' : '#65d146',
               borderRadius: 3,
-              transition: 'width 0.5s ease'
+              transition: 'width 0.5s ease',
+              opacity: loading ? 0.6 : 1
             }}></div>
           </div>
         </div>
@@ -165,6 +184,7 @@ export default function Monitor() {
           <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>已使用</div>
         </div>
       </div>
+      {loading && (<div className="skeletonOverlay skeleton"></div>)}
     </div>
   )}
 
@@ -195,9 +215,9 @@ export default function Monitor() {
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: 'visible' }}>
           <defs>
             <radialGradient id="radarGrad" cx="50%" cy="50%" r="65%">
-              <stop offset="0%" stopColor="#16a34a" stopOpacity="0.35" />
-              <stop offset="60%" stopColor="#22c55e" stopOpacity="0.28" />
-              <stop offset="100%" stopColor="#86efac" stopOpacity="0.22" />
+              <stop offset="0%" stopColor="#65d146" stopOpacity="0.62" />
+              <stop offset="60%" stopColor="#65d146" stopOpacity="0.52" />
+              <stop offset="100%" stopColor="#65d146" stopOpacity="0.42" />
             </radialGradient>
           </defs>
           <circle cx={cx} cy={cy} r={r * 1.0} fill="rgba(0,0,0,0.04)" stroke="none" />
@@ -209,8 +229,8 @@ export default function Monitor() {
             const radii = Array.from({ length: count }, (_, i) => outer - i * step)
             return radii.map((rr, i) => (<g key={i}>{ring(rr)}</g>))
           })()}
-          <path d={path} fill="url(#radarGrad)" stroke="#22c55e" strokeWidth={2.4} className={diagnosing ? 'pulse' : undefined} />
-          {pts.map((p, i) => (<circle key={i} cx={p[0]} cy={p[1]} r={3} fill="#22c55e" stroke="none" />))}
+          <path d={path} fill="url(#radarGrad)" stroke="#65d146" strokeWidth={2.4} className={diagnosing ? 'pulse' : undefined} />
+          {pts.map((p, i) => (<circle key={i} cx={p[0]} cy={p[1]} r={3} fill="#65d146" stroke="none" />))}
           {labels.map((t, i) => {
             const ang = (-90 + (360 / n) * i) * Math.PI / 180
             const c = Math.cos(ang)
@@ -238,8 +258,11 @@ export default function Monitor() {
         .spin { animation: spin 1s linear infinite; }
         @keyframes pulseScale { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
         .pulse { transform-box: fill-box; transform-origin: center; animation: pulseScale 1s ease-in-out infinite; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        .skeletonOverlay { position: absolute; inset: 0; border-radius: 8px; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.06) 50%, rgba(255,255,255,0) 100%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; pointer-events: none; }
+        @keyframes fadeUp { 0% { opacity: 0; transform: translate(-50%, 8px); } 100% { opacity: 1; transform: translate(-50%, 0); } }
       `}</style>
-      <div style={{ background: 'var(--surface)', border: 'none', borderRadius: 8, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ background: 'var(--surface)', border: 'none', borderRadius: 8, padding: 16, display: 'flex', flexDirection: 'column', gap: 12, marginLeft: 35, marginTop: 70 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Radar values={radarValues} size={240} diagnosing={diagnosing} />
         </div>
@@ -259,7 +282,7 @@ export default function Monitor() {
           >查看详情</button>
           <button
             disabled={diagnosing}
-            onClick={async () => { setDiagnosing(true); await load(); setDiagnosing(false) }}
+            onClick={async () => { setDiagnosing(true); await loadAll(); setDiagnosing(false) }}
             style={{
               padding: '6px 12px',
               borderRadius: 16,
@@ -277,6 +300,14 @@ export default function Monitor() {
           )}重新诊断</button>
         </div>
         <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>巡检时间：{lastCheck || '-'}</div>
+        {diagnosing && (
+          <div style={{ alignSelf: 'flex-start', marginTop: 8, marginLeft: 12, width: 260 }}>
+            <div style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:10, padding:'10px 14px', border:'1px solid var(--border)', borderRadius:18, background:'var(--surface)', boxShadow:'0 8px 24px rgba(0,0,0,0.12)' }}>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" className="spin"><path d="M8 1a7 7 0 1 1-7 7" /></svg>
+              <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>正在重新诊断…</span>
+            </div>
+          </div>
+        )}
         {showDetails && (
           <div style={{
             alignSelf: 'flex-start',
@@ -300,14 +331,9 @@ export default function Monitor() {
             </div>
           </div>
         )}
-        {diagnosing && (
-          <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(255,255,255,0.9)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, zIndex: 20 }}>
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" className="spin"><path d="M8 1a7 7 0 1 1-7 7" /></svg>
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>诊断中...</span>
-          </div>
-        )}
       </div>
-      <div style={{ transform: 'scale(0.95)', transformOrigin: 'top left', display: 'flex', flexDirection: 'column', gap: 12, marginLeft: '10em' }}>
+      
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', marginLeft: 0, marginRight: 0 }}>
       <Card 
         title="CPU用量"
         percent={cpu.percent || 0}
@@ -315,6 +341,7 @@ export default function Monitor() {
         detail2="Cores"
         detail3="总计"
         tooltip="服务器 CPU 逻辑核心总数"
+        loading={diagnosing}
         icon={
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
@@ -338,6 +365,7 @@ export default function Monitor() {
         detail2="GiB"
         detail3="总计"
         tooltip="物理内存总量 (RAM)，已扣除内核预留空间"
+        loading={diagnosing}
         icon={
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
@@ -354,6 +382,7 @@ export default function Monitor() {
         detail2="GiB"
         detail3="总计"
         tooltip="服务器磁盘分区总容量"
+        loading={diagnosing}
         icon={
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="4" width="20" height="16" rx="4" />
