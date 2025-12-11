@@ -214,10 +214,12 @@ export default function Monitor() {
       <div style={{ width: size, height: size, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: 'visible' }}>
           <defs>
-            <radialGradient id="radarGrad" cx="50%" cy="50%" r="65%">
-              <stop offset="0%" stopColor="#65d146" stopOpacity="0.62" />
-              <stop offset="60%" stopColor="#65d146" stopOpacity="0.52" />
-              <stop offset="100%" stopColor="#65d146" stopOpacity="0.42" />
+            <radialGradient id="radarGrad" gradientUnits="userSpaceOnUse" cx={cx} cy={cy} r={r}>
+              <stop offset="46%" stopColor="#65d146" stopOpacity="0.85" />
+              <stop offset="60%" stopColor="#79db5b" stopOpacity="0.55" />
+              <stop offset="73%" stopColor="#79db5b" stopOpacity="0.28" />
+              <stop offset="86%" stopColor="#9ca3af" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#9ca3af" stopOpacity="0.12" />
             </radialGradient>
           </defs>
           <circle cx={cx} cy={cy} r={r * 1.0} fill="rgba(0,0,0,0.04)" stroke="none" />
@@ -230,7 +232,7 @@ export default function Monitor() {
             return radii.map((rr, i) => (<g key={i}>{ring(rr)}</g>))
           })()}
           <path d={path} fill="url(#radarGrad)" stroke="#65d146" strokeWidth={2.4} className={diagnosing ? 'pulse' : undefined} />
-          {pts.map((p, i) => (<circle key={i} cx={p[0]} cy={p[1]} r={3} fill="#65d146" stroke="none" />))}
+          {pts.map((p, i) => (<circle key={i} cx={p[0]} cy={p[1]} r={5} fill="#79db5b" stroke="none" />))}
           {labels.map((t, i) => {
             const ang = (-90 + (360 / n) * i) * Math.PI / 180
             const c = Math.cos(ang)
@@ -277,6 +279,9 @@ export default function Monitor() {
               color: 'var(--text-primary)',
               fontSize: 12,
               cursor: 'pointer',
+              backfaceVisibility: 'hidden',
+              transform: 'translateZ(0)',
+              willChange: 'transform',
               minWidth: 96
             }}
           >查看详情</button>
@@ -291,6 +296,9 @@ export default function Monitor() {
               color: 'var(--text-primary)',
               fontSize: 12,
               cursor: diagnosing ? 'not-allowed' : 'pointer',
+              backfaceVisibility: 'hidden',
+              transform: 'translateZ(0)',
+              willChange: 'transform',
               minWidth: 96
             }}
           >{diagnosing && (
