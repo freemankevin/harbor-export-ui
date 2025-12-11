@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { SystemAPI } from '../api/client'
 
 type CpuInfo = { count?: number; percent?: number }
@@ -13,6 +13,12 @@ export default function Monitor() {
   const [showDetails, setShowDetails] = useState(false)
   const [lastCheck, setLastCheck] = useState('')
   const [diagnosing, setDiagnosing] = useState(false)
+  // 页面标题与帮助气泡状态
+  const [showHelp, setShowHelp] = useState(false)
+  const hideTimer = useRef<number | null>(null)
+  // 标题定位常量：可按需微调偏移量
+  const TITLE_LEFT = 30
+  const TITLE_TOP = 24
   
   const fmtTime = (d: Date) => {
     const y = d.getFullYear()
@@ -100,7 +106,7 @@ export default function Monitor() {
             <div style={{ 
               width: `${Math.min(percent, 100)}%`, 
               height: '100%', 
-              background: percent > 90 ? '#ef4444' : percent > 75 ? '#f59e0b' : '#65d146',
+              background: percent > 90 ? '#ef4444' : percent > 75 ? '#f59e0b' : '#5cb300',
               borderRadius: 3,
               transition: 'width 0.5s ease',
               opacity: loading ? 0.6 : 1
@@ -215,11 +221,11 @@ export default function Monitor() {
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: 'visible' }}>
           <defs>
             <radialGradient id="radarGrad" gradientUnits="userSpaceOnUse" cx={cx} cy={cy} r={r}>
-              <stop offset="46%" stopColor="#65d146" stopOpacity="0.85" />
-              <stop offset="60%" stopColor="#79db5b" stopOpacity="0.55" />
-              <stop offset="73%" stopColor="#79db5b" stopOpacity="0.28" />
-              <stop offset="86%" stopColor="#9ca3af" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#9ca3af" stopOpacity="0.12" />
+              <stop offset="35%" stopColor="#c1e29fff" stopOpacity="1" />
+              <stop offset="55%" stopColor="#9fd467ff" stopOpacity="0.75" />
+              <stop offset="75%" stopColor=" #8bc949ff " stopOpacity="0.4" />
+              <stop offset="95%" stopColor="#91cf4fff" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="#86d630ff" stopOpacity="0" />
             </radialGradient>
           </defs>
           <circle cx={cx} cy={cy} r={r * 1.0} fill="rgba(0,0,0,0.04)" stroke="none" />
@@ -231,8 +237,8 @@ export default function Monitor() {
             const radii = Array.from({ length: count }, (_, i) => outer - i * step)
             return radii.map((rr, i) => (<g key={i}>{ring(rr)}</g>))
           })()}
-          <path d={path} fill="url(#radarGrad)" stroke="#65d146" strokeWidth={2.4} className={diagnosing ? 'pulse' : undefined} />
-          {pts.map((p, i) => (<circle key={i} cx={p[0]} cy={p[1]} r={5} fill="#79db5b" stroke="none" />))}
+          <path d={path} fill="url(#radarGrad)" stroke="#5cb300" strokeWidth={1.9} className={diagnosing ? 'pulse' : undefined} />
+          {pts.map((p, i) => (<circle key={i} cx={p[0]} cy={p[1]} r={5} fill="#5cb300" stroke="none" />))}
           {labels.map((t, i) => {
             const ang = (-90 + (360 / n) * i) * Math.PI / 180
             const c = Math.cos(ang)
@@ -254,12 +260,38 @@ export default function Monitor() {
   }
 
   return (
-    <div className="panel" style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16, padding: 24 }}>
-      <style>{`
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .spin { animation: spin 1s linear infinite; }
-        @keyframes pulseScale { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
-        .pulse { transform-box: fill-box; transform-origin: center; animation: pulseScale 1s ease-in-out infinite; }
+    <div style={{ position: 'relative' }}>
+      <div style={{ position: 'absolute', left: TITLE_LEFT, top: TITLE_TOP, zIndex: 3, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>系统监控</h2>
+        <div
+          onMouseEnter={() => { if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null } setShowHelp(true) }}
+          onMouseLeave={() => { hideTimer.current = window.setTimeout(() => setShowHelp(false), 150) }}
+          style={{ position: 'relative', marginTop: 3, width: 18, height: 18, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', background: 'transparent' }}
+          aria-label="帮助"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ display: 'block' }}>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.5 9.5a2.5 2.5 0 1 1 4.9.8c0 1.7-2.4 1.7-2.4 3.2" />
+            <circle cx="12" cy="16.5" r="0.75" />
+          </svg>
+          {showHelp && (
+            <div
+              onMouseEnter={() => { if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null } }}
+              onMouseLeave={() => { hideTimer.current = window.setTimeout(() => setShowHelp(false), 150) }}
+              style={{ position: 'absolute', top: '50%', left: 32, transform: 'translateY(-50%)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '10px 14px', boxShadow: '0 8px 20px rgba(0,0,0,0.08)', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'nowrap', zIndex: 4 }}
+            >
+              <span style={{ fontSize: 12 }}>展示系统资源与健康状态（CPU/内存/磁盘、服务健康评分），支持巡检与诊断</span>
+              <div style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)', width: 10, height: 10, background: 'var(--surface)', borderLeft: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}></div>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="panel" style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16, padding: 24 }}>
+        <style>{`
+          @keyframes spin { 100% { transform: rotate(360deg); } }
+          .spin { animation: spin 1s linear infinite; }
+          @keyframes pulseScale { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+          .pulse { transform-box: fill-box; transform-origin: center; animation: pulseScale 1s ease-in-out infinite; }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         .skeletonOverlay { position: absolute; inset: 0; border-radius: 8px; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.06) 50%, rgba(255,255,255,0) 100%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; pointer-events: none; }
         @keyframes fadeUp { 0% { opacity: 0; transform: translate(-50%, 8px); } 100% { opacity: 1; transform: translate(-50%, 0); } }
@@ -400,6 +432,7 @@ export default function Monitor() {
           </svg>
         }
       />
+      </div>
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { SystemAPI } from '../api/client'
 import { loadConfig } from '../store/config'
 
@@ -9,6 +9,14 @@ export default function SystemPage() {
   const [logs, setLogs] = useState<string[]>([])
   const [ops, setOps] = useState<any[]>([])
   const [operator, setOperator] = useState(cfg?.username || '')
+  // 标题与帮助气泡状态（系统监控 / 系统日志）
+  const [showHelpMonitor, setShowHelpMonitor] = useState(false)
+  const [showHelpLogs, setShowHelpLogs] = useState(false)
+  const hideTimerMonitor = useRef<number | null>(null)
+  const hideTimerLogs = useRef<number | null>(null)
+  // 标题定位常量：可按需微调偏移量
+  const TITLE_LEFT = 30
+  const TITLE_TOP = 24
 
   const load = async () => {
     const i = await SystemAPI.info(); setInfo(i.data)
@@ -27,11 +35,36 @@ export default function SystemPage() {
   const cpu = info?.cpu || {}
 
   return (
-    <div className="panel">
+    <div className="panel" style={{ position: 'relative' }}>
       <div className="actions"><button onClick={load}>刷新</button></div>
 
-      <h2>系统监控</h2>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:16 }}>
+      {/* 系统监控 标题（绝对定位） */}
+      <div style={{ position: 'absolute', left: TITLE_LEFT, top: TITLE_TOP, zIndex: 3, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>系统监控</h2>
+        <div
+          onMouseEnter={() => { if (hideTimerMonitor.current) { clearTimeout(hideTimerMonitor.current); hideTimerMonitor.current = null } setShowHelpMonitor(true) }}
+          onMouseLeave={() => { hideTimerMonitor.current = window.setTimeout(() => setShowHelpMonitor(false), 150) }}
+          style={{ position: 'relative', marginTop: 3, width: 18, height: 18, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', background: 'transparent' }}
+          aria-label="帮助"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ display: 'block' }}>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.5 9.5a2.5 2.5 0 1 1 4.9.8c0 1.7-2.4 1.7-2.4 3.2" />
+            <circle cx="12" cy="16.5" r="0.75" />
+          </svg>
+          {showHelpMonitor && (
+            <div
+              onMouseEnter={() => { if (hideTimerMonitor.current) { clearTimeout(hideTimerMonitor.current); hideTimerMonitor.current = null } }}
+              onMouseLeave={() => { hideTimerMonitor.current = window.setTimeout(() => setShowHelpMonitor(false), 150) }}
+              style={{ position: 'absolute', top: '50%', left: 32, transform: 'translateY(-50%)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '10px 14px', boxShadow: '0 8px 20px rgba(0,0,0,0.08)', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'nowrap', zIndex: 4 }}
+            >
+              <span style={{ fontSize: 12 }}>展示系统资源与健康状态（CPU/内存/磁盘、服务健康评分）</span>
+              <div style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)', width: 10, height: 10, background: 'var(--surface)', borderLeft: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}></div>
+            </div>
+          )}
+        </div>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:16, paddingTop: 52 }}>
         <div className="card">
           <h3>CPU</h3>
           <div>核心数：{cpu.count || '-'}</div>
@@ -52,8 +85,36 @@ export default function SystemPage() {
         </div>
       </div>
 
-      <h2 style={{ marginTop:16 }}>系统日志</h2>
-      <pre style={{ maxHeight:300, overflow:'auto', background:'#111', color:'#eee', padding:12 }}>{logs.join('')}</pre>
+      {/* 系统日志 标题（绝对定位） */}
+      <div style={{ position: 'relative', marginTop: 16 }}>
+        <div style={{ position: 'absolute', left: TITLE_LEFT, top: 0, zIndex: 3, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>系统日志</h2>
+          <div
+            onMouseEnter={() => { if (hideTimerLogs.current) { clearTimeout(hideTimerLogs.current); hideTimerLogs.current = null } setShowHelpLogs(true) }}
+            onMouseLeave={() => { hideTimerLogs.current = window.setTimeout(() => setShowHelpLogs(false), 150) }}
+            style={{ position: 'relative', marginTop: 3, width: 18, height: 18, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', background: 'transparent' }}
+            aria-label="帮助"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ display: 'block' }}>
+              <circle cx="12" cy="12" r="9" />
+              <path d="M9.5 9.5a2.5 2.5 0 1 1 4.9.8c0 1.7-2.4 1.7-2.4 3.2" />
+              <circle cx="12" cy="16.5" r="0.75" />
+            </svg>
+            {showHelpLogs && (
+              <div
+                onMouseEnter={() => { if (hideTimerLogs.current) { clearTimeout(hideTimerLogs.current); hideTimerLogs.current = null } }}
+                onMouseLeave={() => { hideTimerLogs.current = window.setTimeout(() => setShowHelpLogs(false), 150) }}
+                style={{ position: 'absolute', top: '50%', left: 32, transform: 'translateY(-50%)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '10px 14px', boxShadow: '0 8px 20px rgba(0,0,0,0.08)', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'nowrap', zIndex: 4 }}
+              >
+                <span style={{ fontSize: 12 }}>展示系统日志实时输出，支持滚动查看与复制</span>
+                <div style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)', width: 10, height: 10, background: 'var(--surface)', borderLeft: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}></div>
+              </div>
+            )}
+          </div>
+        </div>
+        {/* 避免标题覆盖内容，添加上内边距 */}
+        <pre style={{ maxHeight:300, overflow:'auto', background:'#111', color:'#eee', padding:12, paddingTop: 40 }}>{logs.join('')}</pre>
+      </div>
 
       <h2 style={{ marginTop:16 }}>操作日志</h2>
       <div style={{ display:'flex', gap:8, alignItems:'center' }}>

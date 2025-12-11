@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { SystemAPI } from '../api/client'
 import { loadConfig } from '../store/config'
 
@@ -18,6 +18,10 @@ export default function OpsLogs() {
   const [isFocused, setIsFocused] = useState(false)
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [showHelp, setShowHelp] = useState(false)
+  const hideTimer = useRef<number | null>(null)
+  const TITLE_LEFT = 30
+  const TITLE_TOP = 24
 
   const [showPageSizeMenu, setShowPageSizeMenu] = useState(false)
 
@@ -124,10 +128,34 @@ export default function OpsLogs() {
   }
 
   return (
-    <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'sticky', top: 24, zIndex: 1 }}>
-      <div style={{ padding: '24px 24px 0' }}>
-        <h2 style={{ fontSize: 14 }}>操作日志</h2>
-        <div style={{ marginTop: 16, display: 'flex', gap: 12 }}>
+    <div style={{ position: 'relative' }}>
+      <div style={{ position: 'absolute', left: TITLE_LEFT, top: TITLE_TOP, zIndex: 3, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>操作日志</h2>
+        <div 
+          onMouseEnter={() => { if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null } setShowHelp(true) }}
+          onMouseLeave={() => { hideTimer.current = window.setTimeout(()=> setShowHelp(false), 150) }}
+          style={{ position: 'relative', marginTop: 3, width: 18, height: 18, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', background: 'transparent' }}
+          aria-label="帮助"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ display:'block' }}>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.5 9.5a2.5 2.5 0 1 1 4.9.8c0 1.7-2.4 1.7-2.4 3.2" />
+            <circle cx="12" cy="16.5" r="0.75" />
+          </svg>
+          {showHelp && (
+            <div 
+              onMouseEnter={() => { if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null } }}
+              onMouseLeave={() => { hideTimer.current = window.setTimeout(()=> setShowHelp(false), 150) }}
+              style={{ position: 'absolute', top: '50%', left: 32, transform: 'translateY(-50%)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '10px 14px', boxShadow: '0 8px 20px rgba(0,0,0,0.08)', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'nowrap', zIndex: 4 }}>
+              <span style={{ fontSize: 12 }}>展示平台的操作记录（操作人、动作、详情等），支持筛选与分页，便于审计追踪</span>
+              <div style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)', width: 10, height: 10, background: 'var(--surface)', borderLeft: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}></div>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'relative', zIndex: 1 }}>
+        <div style={{ padding: '16px 24px 0' }}>
+        <div style={{ display: 'flex', gap: 12 }}>
             <div style={{ 
                 flex: 1, 
                 display: 'flex', 
@@ -524,6 +552,7 @@ export default function OpsLogs() {
           background-color: var(--surface-hover);
         }
       `}</style>
+    </div>
     </div>
   )
 }
