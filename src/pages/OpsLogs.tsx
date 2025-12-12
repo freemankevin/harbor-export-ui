@@ -153,7 +153,7 @@ export default function OpsLogs() {
           )}
         </div>
       </div>
-      <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'relative', zIndex: 1 }}>
+      <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'relative', zIndex: 1, height: 800, overflow: 'hidden' }}>
         <div style={{ padding: '16px 24px 0' }}>
         <div style={{ display: 'flex', gap: 12 }}>
             <div style={{ 
@@ -287,7 +287,7 @@ export default function OpsLogs() {
         `}</style>
       </div>
       
-      <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, padding: '16px 24px', overflow: 'auto', minHeight: 0 }}>
         <table style={{ width:'100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)' }}>
@@ -373,24 +373,22 @@ export default function OpsLogs() {
               )
             })}
             
-            {currentOps.length > 0 && (
-              <tr style={{ height: '1px' }}>
-                <td colSpan={6} style={{ padding: 0, borderTop: '1px solid var(--border)' }}></td>
-              </tr>
-            )}
+            
             
             {currentOps.length===0 && <tr><td colSpan={6} style={{ textAlign:'center', padding: 60, color:'var(--text-muted)', borderBottom: '1px solid var(--border)' }}>
               暂无操作记录
             </td></tr>}
           </tbody>
         </table>
+        <div style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>
+          总条数: {total} | 已选: {selected.size}
+        </div>
+      </div>
 
-        {/* 分页控件（华为云风格） */}
-        <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, background: 'var(--surface)' }}
-        >
-          <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-            总条数: {total} | 已选: {selected.size}
-          </div>
+      {/* 分页控件（华为云风格） */}
+      <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, background: 'var(--surface)' }}
+      >
+          <div style={{ height: 0 }}></div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
             {/* 每页条数选择器 */}
@@ -552,7 +550,6 @@ export default function OpsLogs() {
           background-color: var(--surface-hover);
         }
       `}</style>
-    </div>
     </div>
   )
 }

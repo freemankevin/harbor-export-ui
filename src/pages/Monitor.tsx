@@ -280,7 +280,7 @@ export default function Monitor() {
               onMouseLeave={() => { hideTimer.current = window.setTimeout(() => setShowHelp(false), 150) }}
               style={{ position: 'absolute', top: '50%', left: 32, transform: 'translateY(-50%)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '10px 14px', boxShadow: '0 8px 20px rgba(0,0,0,0.08)', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'nowrap', zIndex: 4 }}
             >
-              <span style={{ fontSize: 12 }}>展示系统资源与健康状态（CPU/内存/磁盘、服务健康评分），支持巡检与诊断</span>
+              <span style={{ fontSize: 12 }}>展示系统资源与健康状态（CPU、内存、服务健康评分等），支持巡检与诊断</span>
               <div style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)', width: 10, height: 10, background: 'var(--surface)', borderLeft: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}></div>
             </div>
           )}

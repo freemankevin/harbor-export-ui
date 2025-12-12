@@ -8,6 +8,10 @@ export default function SysLogs() {
   const [intervalMs, setIntervalMs] = useState(10000)
   const [fullscreen, setFullscreen] = useState(false)
   const logRef = useRef<HTMLPreElement | null>(null)
+  const [showHelp, setShowHelp] = useState(false)
+  const hideTimer = useRef<number | null>(null)
+  const TITLE_LEFT = 30
+  const TITLE_TOP = 24
 
   const load = async () => { 
     setLoading(true)
@@ -53,10 +57,12 @@ export default function SysLogs() {
   } : {
     display: 'flex',
     flexDirection: 'column' as const,
-    height: '100%', // 填满父容器
+    height: 800,
     padding: 0,
     overflow: 'hidden' // 确保圆角不被子元素遮挡
   }
+
+  const contentStyle = panelStyle
 
   // 华为云风格按钮样式 - 紧凑型
   const iconBtnStyle = {
@@ -91,7 +97,34 @@ export default function SysLogs() {
   }
 
   return (
-    <div className="panel" style={panelStyle}>
+    <div style={{ position: 'relative' }}>
+      <div style={{ position: 'absolute', left: TITLE_LEFT, top: TITLE_TOP, zIndex: 3, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>系统日志</h2>
+        <div
+          onMouseEnter={() => { if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null } setShowHelp(true) }}
+          onMouseLeave={() => { hideTimer.current = window.setTimeout(() => setShowHelp(false), 150) }}
+          style={{ position: 'relative', marginTop: 3, width: 18, height: 18, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', background: 'transparent' }}
+          aria-label="帮助"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ display: 'block' }}>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.5 9.5a2.5 2.5 0 1 1 4.9.8c0 1.7-2.4 1.7-2.4 3.2" />
+            <circle cx="12" cy="16.5" r="0.75" />
+          </svg>
+          {showHelp && (
+            <div
+              onMouseEnter={() => { if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null } }}
+              onMouseLeave={() => { hideTimer.current = window.setTimeout(() => setShowHelp(false), 150) }}
+              style={{ position: 'absolute', top: '50%', left: 32, transform: 'translateY(-50%)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '10px 14px', boxShadow: '0 8px 20px rgba(0,0,0,0.08)', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'nowrap', zIndex: 4 }}
+            >
+              <span style={{ fontSize: 12 }}>展示系统日志实时输出，支持滚动查看与下载</span>
+              <div style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)', width: 10, height: 10, background: 'var(--surface)', borderLeft: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}></div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="panel" style={contentStyle}>
       {/* 顶部工具栏 */}
       <div style={{ 
         display:'flex', 
@@ -104,18 +137,7 @@ export default function SysLogs() {
         position: 'relative',
         height: 48 // 固定高度
       }}>
-        <div style={{ display:'flex', gap:24 }}>
-          <div style={{ 
-            fontSize: 14, 
-            fontWeight: 600, 
-            color: 'var(--text-primary)', 
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8
-          }}>
-            系统日志
-          </div>
-        </div>
+        <div style={{ display:'flex', gap:24 }}></div>
 
         <div style={{ display:'flex', alignItems:'center', gap: 12 }}>
           {/* 刷新按钮 */}
@@ -320,6 +342,7 @@ export default function SysLogs() {
         >
           下载日志
         </button>
+      </div>
       </div>
     </div>
   )
