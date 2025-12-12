@@ -153,7 +153,7 @@ export default function OpsLogs() {
           )}
         </div>
       </div>
-      <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'relative', zIndex: 1, height: 800, overflow: 'hidden' }}>
+      <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'relative', zIndex: 1, height: 800, overflow: 'hidden', borderRadius: 0 }}>
         <div style={{ padding: '16px 24px 0' }}>
         <div style={{ display: 'flex', gap: 12 }}>
             <div style={{ 
@@ -284,13 +284,15 @@ export default function OpsLogs() {
         <style>{`
           @keyframes spin { 100% { transform: rotate(360deg); } }
           .spin { animation: spin 1s linear infinite; }
+          .ops-header-sep th.th-sep { position: relative; }
+          .ops-header-sep th.th-sep::after { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 66%; width: 1px; background: var(--border); }
         `}</style>
       </div>
       
-      <div style={{ flex: 1, padding: '16px 24px', overflow: 'auto', minHeight: 0 }}>
-        <table style={{ width:'100%', borderCollapse: 'collapse' }}>
+      <div style={{ flex: 1, padding: '16px 24px 0', overflow: 'auto', minHeight: 0, borderRadius: 0 }}>
+        <table style={{ width:'100%', borderCollapse: 'collapse', borderRadius: 0, borderLeft: 'none', borderRight: 'none' }}>
           <thead>
-            <tr style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)' }}>
+            <tr className="ops-header-sep" style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', borderRadius: 0, borderLeft: 'none', borderRight: 'none' }}>
               <th style={{ padding: '12px 16px', width: 40, background: 'var(--bg-secondary)' }}>
                 <input  
                   type="checkbox" 
@@ -299,7 +301,7 @@ export default function OpsLogs() {
                   style={{ cursor: 'pointer' }}
                 />
               </th>
-              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>
+              <th className="th-sep" style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', gap: 4 }} onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}>
                   时间
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -308,9 +310,9 @@ export default function OpsLogs() {
                   </div>
                 </div>
               </th>
-              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>操作人</th>
-              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>动作</th>
-              <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>详情</th>
+              <th className="th-sep" style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>操作人</th>
+              <th className="th-sep" style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>动作</th>
+              <th className="th-sep" style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)' }}>详情</th>
               <th style={{ textAlign:'left', padding: '12px 16px', fontWeight: 500, fontSize: 13, color: 'var(--text-muted)', background: 'var(--bg-secondary)', width: 100 }}>状态</th>
             </tr>
           </thead>
@@ -319,7 +321,7 @@ export default function OpsLogs() {
               const realIndex = ops.indexOf(r)
               const isSelected = selected.has(realIndex)
               return (
-                <tr key={i} style={{ borderBottom: '1px solid var(--border)', background: isSelected ? 'rgba(59, 130, 246, 0.05)' : undefined }} className="hover-row">
+                <tr key={i} style={{ borderBottom: '1px solid var(--border)', background: isSelected ? 'rgba(59, 130, 246, 0.05)' : undefined, borderRadius: 0, borderLeft: 'none', borderRight: 'none' }} className="hover-row">
                   <td style={{ padding: '12px 16px' }}>
                     <input 
                       type="checkbox" 
@@ -380,18 +382,11 @@ export default function OpsLogs() {
             </td></tr>}
           </tbody>
         </table>
-        <div style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>
-          总条数: {total} | 已选: {selected.size}
-        </div>
-      </div>
-
-      {/* 分页控件（华为云风格） */}
-      <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, background: 'var(--surface)' }}
-      >
-          <div style={{ height: 0 }}></div>
-
+        <div style={{ marginTop: 8, paddingTop: 8, borderTop: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+            总条数: {total} | 已选: {selected.size}
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-            {/* 每页条数选择器 */}
             <div style={{ position: 'relative' }}>
               <div
                 onClick={() => setShowPageSizeMenu(!showPageSizeMenu)}
@@ -415,7 +410,6 @@ export default function OpsLogs() {
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
               </div>
-              {/* 下拉菜单 */}
               {showPageSizeMenu && (
                 <>
                   <div style={{ position: 'fixed', inset: 0, zIndex: 10 }} onClick={() => setShowPageSizeMenu(false)} />
@@ -457,10 +451,7 @@ export default function OpsLogs() {
                 </>
               )}
             </div>
-
-            {/* 分页按钮 */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {/* 上一页 */}
               <button
                 disabled={page === 1}
                 onClick={() => handlePageChange(page - 1)}
@@ -491,7 +482,6 @@ export default function OpsLogs() {
                   ‹
                 </span>
               </button>
-              {/* 当前页 */}
               <div
                 style={{
                   width: 32,
@@ -509,7 +499,6 @@ export default function OpsLogs() {
               >
                 {page}
               </div>
-              {/* 下一页 */}
               <button
                 disabled={page >= totalPages}
                 onClick={() => handlePageChange(page + 1)}
@@ -543,6 +532,9 @@ export default function OpsLogs() {
             </div>
           </div>
         </div>
+      </div>
+
+      
       </div>
       
       <style>{`
