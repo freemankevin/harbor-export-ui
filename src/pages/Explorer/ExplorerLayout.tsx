@@ -11,12 +11,12 @@ export default function ExplorerLayout({ children }: ExplorerLayoutProps) {
       backdropFilter: 'blur(20px)',
       border: '1px solid var(--border)',
       borderRadius: '16px',
-      minHeight: '700px',
+      height: 'calc(100vh - 130px)',
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden',
       boxShadow: 'none',
-      margin: '78px 16px 16px 8px'
+      margin: '78px 16px 0 8px'
     }}>
       {/* 头部标签栏 */}
       <div style={{

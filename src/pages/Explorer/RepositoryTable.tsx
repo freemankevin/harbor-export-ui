@@ -90,12 +90,18 @@ export default function RepositoryTable({
   }
 
   return (
-    <table style={{
+    <>
+    <style>{`
+      .repo-header th.th-sep { position: relative; }
+      .repo-header th.th-sep::after { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 66%; width: 1px; background: var(--border); }
+      .repo-table tbody tr:last-child td { border-bottom: 1px solid var(--border); }
+    `}</style>
+    <table className="repo-table" style={{
       width: '100%',
       borderCollapse: 'collapse',
       minWidth: '1000px'
     }}>
-      <thead style={{
+      <thead className="repo-header" style={{
         position: 'sticky',
         top: 0,
         background: 'var(--surface-hover)',
@@ -120,7 +126,7 @@ export default function RepositoryTable({
               style={{ cursor: 'pointer', width: '16px', height: '16px' }}
             />
           </th>
-          <th style={{
+          <th className="th-sep" style={{
             padding: '14px 16px',
             textAlign: 'left',
             fontSize: '12px',
@@ -132,7 +138,7 @@ export default function RepositoryTable({
           }}>
             镜像名称
           </th>
-          <th style={{
+          <th className="th-sep" style={{
             padding: '14px 16px',
             textAlign: 'left',
             fontSize: '12px',
@@ -144,7 +150,7 @@ export default function RepositoryTable({
           }}>
             镜像版本
           </th>
-          <th style={{
+          <th className="th-sep" style={{
             padding: '14px 16px',
             textAlign: 'center',
             fontSize: '12px',
@@ -156,7 +162,7 @@ export default function RepositoryTable({
           }}>
             类型
           </th>
-          <th style={{
+          <th className="th-sep" style={{
             padding: '14px 16px',
             textAlign: 'center',
             fontSize: '12px',
@@ -168,7 +174,7 @@ export default function RepositoryTable({
           }}>
             版本数量
           </th>
-          <th style={{
+          <th className="th-sep" style={{
             padding: '14px 16px',
             textAlign: 'center',
             fontSize: '12px',
@@ -275,12 +281,8 @@ export default function RepositoryTable({
                   borderRadius: '6px',
                   fontSize: '12px',
                   fontWeight: 500,
-                  background: projects.find(p => p.name === selectedProject)?.public
-                    ? 'rgba(16, 185, 129, 0.15)'
-                    : 'rgba(239, 68, 68, 0.15)',
-                  color: projects.find(p => p.name === selectedProject)?.public
-                    ? '#6ee7b7'
-                    : '#fca5a5'
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  color: '#3b82f6'
                 }}>
                   {projects.find(p => p.name === selectedProject)?.public ? '公开' : '私有'}
                 </span>
@@ -343,5 +345,6 @@ export default function RepositoryTable({
         })}
       </tbody>
     </table>
+    </>
   )
 }

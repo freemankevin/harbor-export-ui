@@ -63,7 +63,7 @@ export default function Explorer() {
           <DownloadProgress downloading={downloading} progress={progress} />
 
           {/* 镜像表格 */}
-          <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto' }}>
+          <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', borderBottom: '1px solid var(--border)' }}>
             <RepositoryTable
               selectedProject={selectedProject}
               loading={loading}
