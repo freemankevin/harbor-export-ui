@@ -258,7 +258,6 @@
 
 /* ============ 侧边栏底部 ============ */
 .sidebar-footer {
-  border-top: 1px solid var(--border);
   padding: 12px 8px;
   display: flex;
   flex-direction: column;
