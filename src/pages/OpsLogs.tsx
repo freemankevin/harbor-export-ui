@@ -108,22 +108,32 @@ export default function OpsLogs() {
 
   const renderDetail = (payload: any) => {
     if (!payload) return '-'
-    // 尝试解析 JSON 字符串（如果后端存的是字符串）
     let data = payload
     if (typeof payload === 'string') {
       try { data = JSON.parse(payload) } catch {}
     }
-    
-    // 如果是下载操作，通常包含 image 和 tag
-    if (data.image && data.tag) {
+    if (Array.isArray(data)) {
+      const lines = data.map((it: any) => it && it.image && it.tag ? `${it.image}:${it.tag}` : JSON.stringify(it))
+      return (
+        <pre style={{ fontFamily: 'var(--font-code)', fontSize: 12, color: 'var(--text-primary)', whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0 }}>
+          {lines.join('\n')}
+        </pre>
+      )
+    }
+    if (data && data.image && data.tag) {
       return (
         <span style={{ fontFamily: 'var(--font-code)', fontSize: 13, color: 'var(--text-primary)' }}>
           {data.image}:{data.tag}
         </span>
       )
     }
-    // 其他对象直接显示
-    if (typeof data === 'object') return JSON.stringify(data)
+    if (typeof data === 'object') {
+      return (
+        <pre style={{ fontFamily: 'var(--font-code)', fontSize: 12, color: 'var(--text-primary)', whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0 }}>
+          {JSON.stringify(data, null, 2)}
+        </pre>
+      )
+    }
     return String(data)
   }
 
@@ -153,7 +163,7 @@ export default function OpsLogs() {
           )}
         </div>
       </div>
-      <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'relative', zIndex: 1, height: 800, overflow: 'hidden', borderRadius: '16px' }}>
+      <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'relative', zIndex: 1, height: 'calc(100vh - 130px)', overflow: 'auto', borderRadius: '16px' }}>
         <div style={{ padding: '16px 24px 0' }}>
         <div style={{ display: 'flex', gap: 12 }}>
             <div style={{ 
@@ -289,7 +299,7 @@ export default function OpsLogs() {
         `}</style>
       </div>
       
-      <div style={{ flex: 1, padding: '16px 24px 0', overflow: 'auto', minHeight: 0, borderRadius: 0 }}>
+      <div style={{ flex: 1, padding: '16px 24px 0', minHeight: 0, borderRadius: 0 }}>
         <table style={{ width:'100%', borderCollapse: 'collapse', borderRadius: 0, borderLeft: 'none', borderRight: 'none' }}>
           <thead>
             <tr className="ops-header-sep" style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', borderRadius: 0, borderLeft: 'none', borderRight: 'none' }}>
@@ -349,7 +359,7 @@ export default function OpsLogs() {
                        {r.action}
                      </span>
                   </td>
-                  <td style={{ padding: '12px 16px', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: '12px 16px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                     {renderDetail(r.payload)}
                   </td>
                   <td style={{ padding: '12px 16px', textAlign: 'left' }}>

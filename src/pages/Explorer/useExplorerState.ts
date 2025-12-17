@@ -45,20 +45,27 @@ export function useExplorerState() {
       .finally(() => setLoading(false))
   }, [cfg, selectedProject])
 
-  // 加载仓库标签
-  const loadRepoTags = async (repoName: string) => {
-    if (!cfg || !selectedProject || repoTags.has(repoName)) return
-    
+  // 加载仓库标签（返回标签数组，避免异步状态读取不一致）
+  const loadRepoTags = async (repoName: string): Promise<string[]> => {
+    if (!cfg || !selectedProject) return []
+    if (repoTags.has(repoName)) return repoTags.get(repoName) || []
     try {
       setLoadingTags(prev => new Set(prev).add(repoName))
       const result = await HarborAPI.tags(cfg, selectedProject, repoName)
       const tags = result.tags || []
       setRepoTags(prev => new Map(prev).set(repoName, tags))
+      return tags
     } catch {
       setRepoTags(prev => new Map(prev).set(repoName, []))
+      return []
     } finally {
       setLoadingTags(prev => { const s = new Set(prev); s.delete(repoName); return s })
     }
+  }
+
+  const pickDefaultTag = (tags: string[]) => {
+    if (!tags || tags.length === 0) return ''
+    return tags.includes('latest') ? 'latest' : tags[0]
   }
 
   // 切换仓库选中状态
@@ -70,10 +77,9 @@ export function useExplorerState() {
       return
     }
 
-    await loadRepoTags(repoName)
-    const tags = repoTags.get(repoName) || []
+    const tags = await loadRepoTags(repoName)
     const newSelected = new Map(selectedRepos)
-    newSelected.set(repoName, tags[0] || '')
+    newSelected.set(repoName, pickDefaultTag(tags))
     setSelectedRepos(newSelected)
   }
 
@@ -91,9 +97,8 @@ export function useExplorerState() {
     } else {
       const newSelected = new Map<string, string>()
       for (const repo of filteredRepos) {
-        await loadRepoTags(repo.name)
-        const tags = repoTags.get(repo.name) || []
-        newSelected.set(repo.name, tags[0] || '')
+        const tags = await loadRepoTags(repo.name)
+        newSelected.set(repo.name, pickDefaultTag(tags))
       }
       setSelectedRepos(newSelected)
     }
@@ -112,6 +117,13 @@ export function useExplorerState() {
         return
       }
     }
+
+    await SystemAPI.record(
+      cfg.username,
+      'download_prepare',
+      Array.from(selectedRepos.entries()).map(([image, tag]) => ({ image, tag })),
+      true
+    )
 
     setDownloading(true)
     let successCount = 0
