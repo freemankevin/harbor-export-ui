@@ -205,7 +205,7 @@ export default function RepositoryTable({
       <tbody>
         {filteredRepos.map((repo, index) => {
           const isSelected = selectedRepos.has(repo.name)
-          const selectedTag = selectedRepos.get(repo.name) || 'latest'
+          const selectedTag = selectedRepos.get(repo.name) || ''
           const tags = repoTags.get(repo.name) || []
           const isExpanded = expandedRepo === repo.name
 
@@ -325,7 +325,7 @@ export default function RepositoryTable({
                 }}>
                   <button
                     onClick={() => onSingleDownload(repo.name, selectedTag)}
-                    disabled={downloading}
+                    disabled={downloading || !selectedTag}
                     style={{
                       padding: '6px 16px',
                       background: 'var(--surface)',

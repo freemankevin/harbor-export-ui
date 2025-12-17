@@ -99,7 +99,7 @@ export default function SysLogs() {
   return (
     <div style={{ position: 'relative' }}>
       <div style={{ position: 'absolute', left: TITLE_LEFT, top: TITLE_TOP, zIndex: 3, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>系统日志</h2>
+        <h2 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>系统日志</h2>
         <div
           onMouseEnter={() => { if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null } setShowHelp(true) }}
           onMouseLeave={() => { hideTimer.current = window.setTimeout(() => setShowHelp(false), 150) }}

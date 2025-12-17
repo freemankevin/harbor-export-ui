@@ -106,34 +106,41 @@ export function useExplorerState() {
       return
     }
 
+    for (const [repoName, tag] of selectedRepos) {
+      if (!tag) {
+        alert(`请为镜像 ${repoName} 选择标签后再下载`)
+        return
+      }
+    }
+
     setDownloading(true)
     let successCount = 0
     let failCount = 0
 
-    for (const [repoName, tag] of selectedRepos) {
-      try {
-        setProgress({ loaded: 0 })
-        const blob = await DockerAPI.downloadStream(
-          cfg, 
-          repoName, 
-          tag, 
-          (loaded, total) => setProgress({ loaded, total })
-        )
-        
-        const filename = `${repoName.replace(/\//g, '_')}_${tag}.tar.gz`
-        const a = document.createElement('a')
-        a.href = URL.createObjectURL(blob)
-        a.download = filename
-        a.click()
-        URL.revokeObjectURL(a.href)
-        
-        await SystemAPI.record(cfg.username, 'download', { image: repoName, tag }, true)
-        successCount++
-      } catch (e) {
+    const downloadOne = async (repoName: string, tag: string) => {
+      setProgress({ loaded: 0 })
+      const blob = await DockerAPI.downloadStream(
+        cfg, 
+        repoName, 
+        tag, 
+        (loaded, total) => setProgress({ loaded, total })
+      )
+      const filename = `${repoName.replace(/\//g, '_')}_${tag}.tar.gz`
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = filename
+      a.click()
+      URL.revokeObjectURL(a.href)
+      await SystemAPI.record(cfg.username, 'download', { image: repoName, tag }, true)
+    }
+
+    const tasks = Array.from(selectedRepos.entries()).map(([repoName, tag]) =>
+      downloadOne(repoName, tag).then(() => { successCount++ }).catch(async () => {
         await SystemAPI.record(cfg.username, 'download', { image: repoName, tag }, false)
         failCount++
-      }
-    }
+      })
+    )
+    await Promise.allSettled(tasks)
     
     setDownloading(false)
     setProgress(null)

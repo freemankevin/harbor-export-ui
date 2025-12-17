@@ -104,7 +104,6 @@ function App() {
           )}
         </div>
 
-        {/* 底部信息 */}
         <div className="sidebar-footer">
           <div className="row" style={{ cursor: 'pointer' }} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} title="切换主题">
             {theme === 'dark' ? (
@@ -113,10 +112,6 @@ function App() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
             )}
             <span>{theme === 'dark' ? '浅色主题' : '深色主题'}</span>
-          </div>
-          <div className="row" title="API 版本">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 0 0 20M12 2a15.3 15.3 0 0 1 0 20" /></svg>
-            <span>Harbor API V{(apiVer || '2.0').replace(/^v/i, '')}</span>
           </div>
         </div>
       </aside>
