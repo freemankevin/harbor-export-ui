@@ -61,24 +61,25 @@ function App() {
             </button>
           ))}
 
-          <button
-            className={`menu-group-header ${sysOpen ? 'open' : 'closed'}`}
-            onClick={() => setSysOpen(!sysOpen)}
-            title={collapsed ? '系统管理' : undefined}
-          >
-            <span>系统管理</span>
-            <span className="chevron">
-              {sysOpen ? (
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M1.5 6 L5 3 L8.5 6" />
-                </svg>
-              ) : (
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M1.5 4 L5 7 L8.5 4" />
-                </svg>
-              )}
-            </span>
-          </button>
+          {!collapsed && (
+            <button
+              className={`menu-group-header ${sysOpen ? 'open' : 'closed'}`}
+              onClick={() => setSysOpen(!sysOpen)}
+            >
+              <span>系统管理</span>
+              <span className="chevron">
+                {sysOpen ? (
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1.5 6 L5 3 L8.5 6" />
+                  </svg>
+                ) : (
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1.5 4 L5 7 L8.5 4" />
+                  </svg>
+                )}
+              </span>
+            </button>
+          )}
 
           {sysOpen && !collapsed && (
             <div className="menu-group-children">
