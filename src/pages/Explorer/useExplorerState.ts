@@ -14,6 +14,7 @@ export function useExplorerState() {
   const [downloading, setDownloading] = useState(false)
   const [progress, setProgress] = useState<{loaded: number, total?: number} | null>(null)
   const [expandedRepo, setExpandedRepo] = useState<string | null>(null)
+  const [loadingTags, setLoadingTags] = useState<Set<string>>(new Set())
 
   // 加载项目列表
   useEffect(() => {
@@ -49,11 +50,14 @@ export function useExplorerState() {
     if (!cfg || !selectedProject || repoTags.has(repoName)) return
     
     try {
+      setLoadingTags(prev => new Set(prev).add(repoName))
       const result = await HarborAPI.tags(cfg, selectedProject, repoName)
-      const tags = result.tags || ['latest']
+      const tags = result.tags || []
       setRepoTags(prev => new Map(prev).set(repoName, tags))
     } catch {
-      setRepoTags(prev => new Map(prev).set(repoName, ['latest']))
+      setRepoTags(prev => new Map(prev).set(repoName, []))
+    } finally {
+      setLoadingTags(prev => { const s = new Set(prev); s.delete(repoName); return s })
     }
   }
 
@@ -67,9 +71,9 @@ export function useExplorerState() {
     }
 
     await loadRepoTags(repoName)
-    const tags = repoTags.get(repoName) || ['latest']
+    const tags = repoTags.get(repoName) || []
     const newSelected = new Map(selectedRepos)
-    newSelected.set(repoName, tags[0] || 'latest')
+    newSelected.set(repoName, tags[0] || '')
     setSelectedRepos(newSelected)
   }
 
@@ -88,8 +92,8 @@ export function useExplorerState() {
       const newSelected = new Map<string, string>()
       for (const repo of filteredRepos) {
         await loadRepoTags(repo.name)
-        const tags = repoTags.get(repo.name) || ['latest']
-        newSelected.set(repo.name, tags[0] || 'latest')
+        const tags = repoTags.get(repo.name) || []
+        newSelected.set(repo.name, tags[0] || '')
       }
       setSelectedRepos(newSelected)
     }
@@ -199,6 +203,7 @@ export function useExplorerState() {
     progress,
     expandedRepo,
     filteredRepos,
+    loadingTags,
     loadRepoTags,
     toggleSelectRepo,
     changeRepoTag,

@@ -20,6 +20,7 @@ export default function Explorer() {
     progress,
     expandedRepo,
     filteredRepos,
+    loadingTags,
     toggleSelectRepo,
     changeRepoTag,
     toggleSelectAll,
@@ -74,6 +75,7 @@ export default function Explorer() {
               expandedRepo={expandedRepo}
               downloading={downloading}
               searchQuery={searchQuery}
+              loadingTags={loadingTags}
               onToggleSelectAll={() => toggleSelectAll(filteredRepos)}
               onToggleSelectRepo={toggleSelectRepo}
               onChangeRepoTag={changeRepoTag}

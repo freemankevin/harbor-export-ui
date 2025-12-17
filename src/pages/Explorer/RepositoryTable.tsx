@@ -11,6 +11,7 @@ interface RepositoryTableProps {
   expandedRepo: string | null
   downloading: boolean
   searchQuery: string
+  loadingTags: Set<string>
   onToggleSelectAll: () => void
   onToggleSelectRepo: (repoName: string, checked: boolean) => void
   onChangeRepoTag: (repoName: string, tag: string) => void
@@ -28,6 +29,7 @@ export default function RepositoryTable({
   expandedRepo,
   downloading,
   searchQuery,
+  loadingTags,
   onToggleSelectAll,
   onToggleSelectRepo,
   onChangeRepoTag,
@@ -208,139 +210,177 @@ export default function RepositoryTable({
           const isExpanded = expandedRepo === repo.name
 
           return (
-            <tr
-              key={repo.name}
-              style={{
-                borderTop: index === 0 ? 'none' : '1px solid rgba(71, 85, 105, 0.3)',
-                transition: 'background 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--surface-hover)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent'
-              }}
-            >
-              <td style={{
-                padding: '14px 20px',
-                fontSize: '14px',
-                color: 'var(--text-secondary)'
-              }}>
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={(e) => onToggleSelectRepo(repo.name, e.target.checked)}
-                  style={{ cursor: 'pointer', width: '16px', height: '16px' }}
-                />
-              </td>
-              <td style={{
-                padding: '14px 16px',
-                fontSize: '14px',
-                color: 'var(--text-secondary)'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
+            <>
+              <tr
+                key={repo.name}
+                style={{
+                  borderTop: index === 0 ? 'none' : '1px solid rgba(71, 85, 105, 0.3)',
+                  transition: 'background 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--surface-hover)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                }}
+              >
+                <td style={{
+                  padding: '14px 20px',
+                  fontSize: '14px',
+                  color: 'var(--text-secondary)'
                 }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
-                    <rect x="3" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="14" width="7" height="7"></rect>
-                    <rect x="3" y="14" width="7" height="7"></rect>
-                  </svg>
-                  <span style={{ fontWeight: 500, whiteSpace: 'nowrap' }}>{repo.name}</span>
-                </div>
-              </td>
-              <td style={{
-                padding: '14px 16px',
-                fontSize: '14px',
-                color: 'var(--text-secondary)'
-              }}>
-                <TagSelector
-                  repoName={repo.name}
-                  isSelected={isSelected}
-                  selectedTag={selectedTag}
-                  tags={tags}
-                  isExpanded={isExpanded}
-                  onTagChange={onChangeRepoTag}
-                  onToggleExpand={onToggleExpandRepo}
-                />
-              </td>
-              <td style={{
-                padding: '14px 16px',
-                fontSize: '14px',
-                color: 'var(--text-secondary)',
-                textAlign: 'center'
-              }}>
-                <span style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  padding: '4px 10px',
-                  borderRadius: '6px',
-                  fontSize: '12px',
-                  fontWeight: 500,
-                  background: 'rgba(59, 130, 246, 0.1)',
-                  color: '#3b82f6'
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={(e) => onToggleSelectRepo(repo.name, e.target.checked)}
+                    style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                  />
+                </td>
+                <td style={{
+                  padding: '14px 16px',
+                  fontSize: '14px',
+                  color: 'var(--text-secondary)'
                 }}>
-                  {projects.find(p => p.name === selectedProject)?.public ? '公开' : '私有'}
-                </span>
-              </td>
-              <td style={{
-                padding: '14px 16px',
-                fontSize: '14px',
-                color: 'var(--text-secondary)',
-                textAlign: 'center'
-              }}>
-                {repo.artifact_count || repo.tags?.length || 0}
-              </td>
-              <td style={{
-                padding: '14px 16px',
-                fontSize: '14px',
-                color: 'var(--text-secondary)',
-                textAlign: 'center'
-              }}>
-                {repo.pull_count || 0}
-              </td>
-              <td style={{
-                padding: '14px 20px 14px 16px',
-                fontSize: '14px',
-                color: 'var(--text-secondary)',
-                textAlign: 'center'
-              }}>
-                <button
-                  onClick={() => onSingleDownload(repo.name, selectedTag)}
-                  disabled={downloading}
-                  style={{
-                    padding: '6px 16px',
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: '6px',
-                    color: 'var(--text-primary)',
-                    fontSize: '13px',
-                    fontWeight: 500,
-                    cursor: downloading ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.2s',
-                    opacity: downloading ? 0.5 : 1
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!downloading) {
-                      e.currentTarget.style.background = 'var(--surface-hover)'
-                      e.currentTarget.style.borderColor = 'var(--primary)'
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
+                      <rect x="3" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="14" width="7" height="7"></rect>
+                      <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span style={{ fontWeight: 500, whiteSpace: 'nowrap' }}>{repo.name}</span>
+                  </div>
+                </td>
+                <td style={{
+                  padding: '14px 16px',
+                  fontSize: '14px',
+                  color: 'var(--text-secondary)'
+                }}>
+                  <TagSelector
+                    repoName={repo.name}
+                    isSelected={isSelected}
+                    selectedTag={selectedTag}
+                    tags={tags}
+                    isExpanded={isExpanded}
+                    onTagChange={onChangeRepoTag}
+                    onToggleExpand={onToggleExpandRepo}
+                  />
+                </td>
+                <td style={{
+                  padding: '14px 16px',
+                  fontSize: '14px',
+                  color: 'var(--text-secondary)',
+                  textAlign: 'center'
+                }}>
+                  {(() => {
+                    const isPublic = projects.find(p => p.name === selectedProject)?.public
+                    const style = isPublic ? {
+                      background: 'rgba(59, 130, 246, 0.1)',
+                      color: '#3b82f6'
+                    } : {
+                      background: 'rgba(245, 158, 11, 0.12)',
+                      color: '#f59e0b'
                     }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!downloading) {
-                      e.currentTarget.style.background = 'var(--surface)'
-                      e.currentTarget.style.borderColor = 'var(--border)'
-                    }
-                  }}
-                >
-                  下载
-                </button>
-              </td>
-            </tr>
+                    return (
+                      <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        ...style
+                      }}>
+                        {isPublic ? '公开' : '私有'}
+                      </span>
+                    )
+                  })()}
+                </td>
+                <td style={{
+                  padding: '14px 16px',
+                  fontSize: '14px',
+                  color: 'var(--text-secondary)',
+                  textAlign: 'center'
+                }}>
+                  {repo.artifact_count || repo.tags?.length || 0}
+                </td>
+                <td style={{
+                  padding: '14px 16px',
+                  fontSize: '14px',
+                  color: 'var(--text-secondary)',
+                  textAlign: 'center'
+                }}>
+                  {repo.pull_count || 0}
+                </td>
+                <td style={{
+                  padding: '14px 20px 14px 16px',
+                  fontSize: '14px',
+                  color: 'var(--text-secondary)',
+                  textAlign: 'center'
+                }}>
+                  <button
+                    onClick={() => onSingleDownload(repo.name, selectedTag)}
+                    disabled={downloading}
+                    style={{
+                      padding: '6px 16px',
+                      background: 'var(--surface)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '6px',
+                      color: 'var(--text-primary)',
+                      fontSize: '13px',
+                      fontWeight: 500,
+                      cursor: downloading ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s',
+                      opacity: downloading ? 0.5 : 1
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!downloading) {
+                        e.currentTarget.style.background = 'var(--surface-hover)'
+                        e.currentTarget.style.borderColor = 'var(--primary)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!downloading) {
+                        e.currentTarget.style.background = 'var(--surface)'
+                        e.currentTarget.style.borderColor = 'var(--border)'
+                      }
+                    }}
+                  >
+                    下载
+                  </button>
+                </td>
+              </tr>
+              {isExpanded && (
+                <tr>
+                  <td colSpan={7} style={{ padding:'10px 16px', background:'var(--surface-hover)' }}>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                      {loadingTags.has(repo.name) ? (
+                        <span style={{ color:'var(--text-muted)' }}>加载中...</span>
+                      ) : tags.length > 0 ? tags.map(tag => (
+                        <div key={tag} style={{ display:'flex', alignItems:'center', gap:8, padding:'6px 10px', border:'1px solid var(--border)', borderRadius:6, background:'var(--surface)' }}>
+                          <span style={{ color:'var(--text-secondary)', fontSize:13 }}>{tag}</span>
+                          <button
+                            onClick={() => onChangeRepoTag(repo.name, tag)}
+                            className="btn-ghost"
+                          >设为选择</button>
+                          <button
+                            onClick={() => onSingleDownload(repo.name, tag)}
+                            className="btn-ghost"
+                          >下载</button>
+                        </div>
+                      )) : (
+                        <span style={{ color:'var(--text-muted)' }}>正在加载或无标签</span>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </>
           )
         })}
       </tbody>
