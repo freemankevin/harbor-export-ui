@@ -14,6 +14,8 @@ export default function Settings() {
   const [showPwd, setShowPwd] = useState(false)
   const [focused, setFocused] = useState<'url' | 'username' | 'password' | null>(null)
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const TITLE_LEFT = 30
+  const TITLE_TOP = 24
 
   useEffect(() => {
     const stored = loadConfig()
@@ -81,7 +83,7 @@ export default function Settings() {
           <div 
             onMouseEnter={() => { if (hideTimer.current) clearTimeout(hideTimer.current); setShowHelp(true) }}
             onMouseLeave={() => { hideTimer.current = window.setTimeout(() => setShowHelp(false), 150) }}
-            style={{ position: 'relative', width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-muted)', background: 'transparent' }}
+            style={{ position: 'relative', marginTop: 3, width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-muted)', background: 'transparent' }}
             aria-label="帮助"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -93,10 +95,10 @@ export default function Settings() {
               <div 
                 onMouseEnter={() => { if (hideTimer.current) clearTimeout(hideTimer.current) }}
                 onMouseLeave={() => { hideTimer.current = window.setTimeout(() => setShowHelp(false), 150) }}
-                style={{ position: 'absolute', top: '100%', left: 0, marginTop: 12, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '12px 16px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', color: 'var(--text-primary)', fontSize: 13, lineHeight: 1.6, width: 280, zIndex: 10 }}
+                style={{ position: 'absolute', top: '50%', left: 32, transform: 'translateY(-50%)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '10px 14px', boxShadow: '0 8px 20px rgba(0,0,0,0.08)', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'nowrap', zIndex: 10 }}
               >
-                <div style={{ fontWeight: 600, marginBottom: 4 }}>配置 Harbor 连接</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>配置并管理远程 Harbor 仓库连接</div>
+                <span style={{ fontSize: 12 }}>配置并管理远程 Harbor 仓库连接</span>
+                <div style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)', width: 10, height: 10, background: 'var(--surface)', borderLeft: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}></div>
               </div>
             )}
           </div>
@@ -142,10 +144,10 @@ export default function Settings() {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
-                  <rect x="4" y="4" width="6" height="6" rx="1"></rect>
-                  <rect x="14" y="4" width="6" height="6" rx="1"></rect>
-                  <rect x="4" y="14" width="6" height="6" rx="1"></rect>
-                  <rect x="14" y="14" width="6" height="6" rx="1"></rect>
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
                 </svg>
                 <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', display: 'block', margin: 0 }}>Harbor 地址</label>
               </div>
