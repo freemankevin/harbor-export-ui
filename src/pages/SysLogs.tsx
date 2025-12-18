@@ -10,8 +10,8 @@ export default function SysLogs() {
   const logRef = useRef<HTMLPreElement | null>(null)
   const [showHelp, setShowHelp] = useState(false)
   const hideTimer = useRef<number | null>(null)
-  const TITLE_LEFT = 30
-  const TITLE_TOP = 24
+  const TITLE_LEFT = 48
+  const TITLE_TOP = 46
 
   const load = async () => { 
     setLoading(true)
@@ -57,9 +57,11 @@ export default function SysLogs() {
   } : {
     display: 'flex',
     flexDirection: 'column' as const,
-    height: 800,
+    height: 'calc(100vh - 130px)',
     padding: 0,
-    overflow: 'hidden' // 确保圆角不被子元素遮挡
+    overflow: 'hidden', // 确保圆角不被子元素遮挡
+    margin: '100px 32px 32px 32px',
+    borderRadius: '16px'
   }
 
   const contentStyle = panelStyle

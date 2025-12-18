@@ -15,7 +15,7 @@ export default function Settings() {
   const [focused, setFocused] = useState<'url' | 'username' | 'password' | null>(null)
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const TITLE_LEFT = 30
-  const TITLE_TOP = 24
+  const TITLE_TOP = 46
 
   useEffect(() => {
     const stored = loadConfig()
@@ -30,8 +30,7 @@ export default function Settings() {
   const onSave = () => {
     setSaving(true)
     saveConfig(cfg)
-    setConnectionStatus('success')
-    setResult({ ok: true, message: '配置已保存' })
+    setResult({ ok: true, message: '配置已保存，请点击测试连接以验证' })
     setTimeout(() => setSaving(false), 300)
   }
 
@@ -75,7 +74,7 @@ export default function Settings() {
   return (
     <div style={{ position: 'relative', minHeight: '100vh' }}>
       {/* 标题区域 */}
-      <div style={{ position: 'sticky', top: 25, zIndex: 10, padding: '24px', paddingBottom: 0 }}>
+      <div style={{ position: 'absolute', left: TITLE_LEFT, top: TITLE_TOP, zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
           <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
             Harbor 连接配置
@@ -106,13 +105,14 @@ export default function Settings() {
       </div>
 
       {/* 主内容卡片 */}
-      <div style={{ padding: '24px' }}>
+      <div style={{ padding: 0}}>
         <div style={{
           background: 'var(--surface)',
           border: '1px solid var(--border)',
           borderRadius: 16,
-          padding: 24,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+          padding: 32,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          margin: '100px 32px 32px 32px',
         }}>
           {/* 连接状态指示器 */}
           <div style={{ 

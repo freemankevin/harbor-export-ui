@@ -20,8 +20,8 @@ export default function OpsLogs() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [showHelp, setShowHelp] = useState(false)
   const hideTimer = useRef<number | null>(null)
-  const TITLE_LEFT = 30
-  const TITLE_TOP = 24
+  const TITLE_LEFT = 48
+  const TITLE_TOP = 46
 
   const [showPageSizeMenu, setShowPageSizeMenu] = useState(false)
 
@@ -163,7 +163,7 @@ export default function OpsLogs() {
           )}
         </div>
       </div>
-      <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'relative', zIndex: 1, height: 'calc(100vh - 130px)', overflow: 'auto', borderRadius: '16px' }}>
+      <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'relative', zIndex: 1, height: 'calc(100vh - 130px)', overflow: 'hidden', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', margin: '100px 32px 32px 32px' }}>
         <div style={{ padding: '16px 24px 0' }}>
         <div style={{ display: 'flex', gap: 12 }}>
             <div style={{ 

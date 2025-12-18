@@ -9,7 +9,7 @@
 /* ============ 布局 ============ */
 .layout {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 240px 2fr;
   gap: 0;
   height: 100vh;
   min-height: 100vh;
@@ -49,13 +49,13 @@
 /* ============ 折叠按钮 - 简洁优雅设计 ============ */
 .sidebar-toggle {
   position: absolute;
-  top: 16px;
+  top: 14px; /* 调整顶部位置使其垂直居中 */
   right: 12px;
-  width: 32px;
-  height: 32px;
+  width: 28px; /* 稍微调小尺寸 */
+  height: 28px;
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 0;
   display: flex;
   align-items: center;
@@ -96,23 +96,30 @@
   color: var(--text-primary);
   display: block;
   line-height: 1.4;
-  padding: 20px 16px 12px;
+  height: 56px; /* 固定高度确保对齐 */
+  padding: 0 16px; /* 使用 Flex 布局垂直居中，移除上下 padding */
   background: var(--surface);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* 使用 border-bottom 替代伪元素，并使用 clip-path 或 margin 控制长度 */
+}
+
+/* 标题下方的分割线容器 */
+.sidebar .title-divider {
+  height: 1px;
+  background: var(--border);
+  width: 50%;
+  margin: 0 16px 12px 16px; /* 这里的 margin-bottom 控制与下方菜单的距离 */
 }
 
 .sidebar .title::after {
-  content: '';
-  display: block;
-  height: 1px;
-  background: var(--border);
-  width: calc(100% - 16px);
-  margin-top: 12px;
-  margin-left: -16px;
+  display: none; /* 移除原来的伪元素 */
 }
 
 .sidebar.collapsed .title {

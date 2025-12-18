@@ -47,7 +47,10 @@ function App() {
         </button>
 
         {/* 标题 */}
-        <div className="title">容器镜像服务 SWR</div>
+        <div className="title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <img src="/vite.svg" alt="logo" style={{ width: 20, height: 20 }} />
+          容器镜像服务
+        </div>
 
         {/* 菜单 */}
         <div className="menu">

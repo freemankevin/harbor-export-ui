@@ -13,12 +13,13 @@ export default function Monitor() {
   const [showDetails, setShowDetails] = useState(false)
   const [lastCheck, setLastCheck] = useState('')
   const [diagnosing, setDiagnosing] = useState(false)
+  const [backendConnected, setBackendConnected] = useState(true)
   // 页面标题与帮助气泡状态
   const [showHelp, setShowHelp] = useState(false)
   const hideTimer = useRef<number | null>(null)
   // 标题定位常量：可按需微调偏移量
-  const TITLE_LEFT = 30
-  const TITLE_TOP = 24
+  const TITLE_LEFT = 48
+  const TITLE_TOP = 46
   
   const fmtTime = (d: Date) => {
     const y = d.getFullYear()
@@ -35,10 +36,14 @@ export default function Monitor() {
       const [i, h] = await Promise.all([SystemAPI.info(), SystemAPI.health()])
       setInfo(i.data)
       setHealth(h.data)
+      setBackendConnected(true)
       const ts = fmtTime(new Date())
       setLastCheck(ts)
       try { localStorage.setItem('monitor_cache', JSON.stringify({ info: i.data, health: h.data, lastCheck: ts })) } catch {}
-    } catch(e) { console.error(e) }
+    } catch(e) { 
+      console.error(e) 
+      setBackendConnected(false)
+    }
   }
 
   useEffect(()=> {
@@ -66,7 +71,7 @@ export default function Monitor() {
   const cpu: CpuInfo = info?.cpu || {}
 
   const memPercent = mem.total ? Number((((mem.used || 0) / (mem.total || 1)) * 100).toFixed(2)) : 0
-  const serviceOk = health?.service_ok === true || health?.ok === true || !!info
+  const serviceOk = backendConnected && (health?.service_ok === true || health?.ok === true || !!info)
   const harborOk = health?.harbor_ok === true || !!info?.harbor_api_version
   const cpuOk = (cpu?.percent || 0) < 85
   const memOk = memPercent < 85
@@ -80,7 +85,7 @@ export default function Monitor() {
     return (
     <div style={{ 
       background: 'var(--surface)', 
-      borderRadius: 8, 
+      borderRadius: 16, 
       border: '1px solid var(--border)',
       padding: 16,
       boxShadow: 'none',
@@ -208,12 +213,12 @@ export default function Monitor() {
     const ring = (rr: number) => (
       <circle cx={cx} cy={cy} r={rr} fill="none" stroke="rgba(0,0,0,0.10)" strokeWidth={0.6} />
     )
-    const labels = ['CPU','内存','磁盘','外部依赖','核心服务']
+    const labels = ['CPU','内存','磁盘','Harbor 服务','后台API']
     const labelOffsets = [
       { dx: 0, dy: -4 },
       { dx: 6, dy: 0 },
       { dx: 12, dy: -4 },
-      { dx: -20, dy: -3 },
+      { dx: -30, dy: -3 },
       { dx: -13, dy: 2 }
     ]
     return (
@@ -286,7 +291,8 @@ export default function Monitor() {
           )}
         </div>
       </div>
-      <div className="panel" style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16, padding: 24 }}>
+      <div style={{ padding: '100px 32px 32px 32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16 }}>
         <style>{`
           @keyframes spin { 100% { transform: rotate(360deg); } }
           .spin { animation: spin 1s linear infinite; }
@@ -296,7 +302,8 @@ export default function Monitor() {
         .skeletonOverlay { position: absolute; inset: 0; border-radius: 8px; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.06) 50%, rgba(255,255,255,0) 100%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; pointer-events: none; }
         @keyframes fadeUp { 0% { opacity: 0; transform: translate(-50%, 8px); } 100% { opacity: 1; transform: translate(-50%, 0); } }
       `}</style>
-      <div style={{ background: 'var(--surface)', border: 'none', borderRadius: 8, padding: 16, display: 'flex', flexDirection: 'column', gap: 12, marginLeft: 35, marginTop: 70 }}>
+      {/* 左侧区域：移除卡片背景和边框，直接展示内容，并调整上边距使其对齐右侧第二个卡片中线 */}
+      <div style={{ padding: '100px 16px 16px 16px', display: 'flex', flexDirection: 'column', gap: 12, minHeight: 'calc(100vh - 100px)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Radar values={radarValues} size={240} diagnosing={diagnosing} />
         </div>
@@ -363,8 +370,8 @@ export default function Monitor() {
             <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>健康详情</div>
             <div style={{ borderTop: '1px dashed var(--border)', margin: '8px 0' }}></div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 6 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color:'var(--text-muted)' }}>核心服务</span><span style={{ color: serviceOk ? '#22c55e' : '#ef4444' }}>{serviceOk ? '✓' : '✗'}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color:'var(--text-muted)' }}>外部依赖</span><span style={{ color: harborOk ? '#22c55e' : '#ef4444' }}>{harborOk ? '✓' : '✗'}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color:'var(--text-muted)' }}>后台API</span><span style={{ color: serviceOk ? '#22c55e' : '#ef4444' }}>{serviceOk ? '✓' : '✗'}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color:'var(--text-muted)' }}>Harbor 服务</span><span style={{ color: harborOk ? '#22c55e' : '#ef4444' }}>{harborOk ? '✓' : '✗'}</span></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color:'var(--text-muted)' }}>{'CPU<85%'}</span><span style={{ color: cpuOk ? '#22c55e' : '#ef4444' }}>{cpuOk ? '✓' : '✗'}</span></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color:'var(--text-muted)' }}>{'内存<85%'}</span><span style={{ color: memOk ? '#22c55e' : '#ef4444' }}>{memOk ? '✓' : '✗'}</span></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color:'var(--text-muted)' }}>{'磁盘<85%'}</span><span style={{ color: diskOk ? '#22c55e' : '#ef4444' }}>{diskOk ? '✓' : '✗'}</span></div>
@@ -373,9 +380,9 @@ export default function Monitor() {
         )}
       </div>
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', marginLeft: 0, marginRight: 0 }}>
-      <Card 
-        title="CPU用量"
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', minHeight: 'calc(100vh - 100px)' }}>
+        <Card 
+          title="CPU用量"
         percent={cpu.percent || 0}
         detail1={fmtNum(cpu.count || 0)}
         detail2="Cores"
@@ -432,6 +439,7 @@ export default function Monitor() {
           </svg>
         }
       />
+      </div>
       </div>
       </div>
     </div>
