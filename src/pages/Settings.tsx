@@ -75,7 +75,7 @@ export default function Settings() {
   return (
     <div style={{ position: 'relative', minHeight: '100vh' }}>
       {/* 标题区域 */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 10, padding: '24px', paddingBottom: 0 }}>
+      <div style={{ position: 'sticky', top: 25, zIndex: 10, padding: '24px', paddingBottom: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
           <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
             Harbor 连接配置
@@ -152,7 +152,7 @@ export default function Settings() {
                 <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', display: 'block', margin: 0 }}>Harbor 地址</label>
               </div>
               <input 
-                placeholder="https://10.3.2.40" 
+                placeholder="https://192.168.1.100" 
                 value={cfg.harborUrl} 
                 onChange={(e) => onChange('harborUrl', e.target.value)} 
                 onFocus={() => setFocused('url')} 
@@ -182,7 +182,7 @@ export default function Settings() {
                 <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', display: 'block', margin: 0 }}>用户名</label>
               </div>
               <input 
-                placeholder="kingo_oa" 
+                placeholder="developer" 
                 value={cfg.username} 
                 onChange={(e) => onChange('username', e.target.value)} 
                 onFocus={() => setFocused('username')} 
