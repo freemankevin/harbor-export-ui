@@ -94,42 +94,52 @@ export default function RepositoryTable({
   return (
     <>
     <style>{`
-      .explorer-table-sep th.th-sep { position: relative; }
-      .explorer-table-sep th.th-sep::after { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 66%; width: 1px; background: var(--border); }
-      .explorer-table tbody tr {
-        border-radius: 0 !important;
+      .explorer-table {
+        border-collapse: collapse;
+        border: none;
+        width: 100%;
+        min-width: 1000px;
+      }
+      .explorer-table th,
+      .explorer-table td {
+        border: none;
+        border-bottom: 1px solid var(--border);
+        height: 48px;
+        padding: 8px 16px;
+        vertical-align: middle;
+        box-sizing: border-box;
+      }
+      .explorer-table th {
+        background: var(--bg-secondary);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+      .explorer-table td {
+        font-size: 14px;
+        color: var(--text-secondary);
       }
       .explorer-table tbody tr:hover {
         background-color: var(--surface-hover);
       }
+      .explorer-table th:first-child,
+      .explorer-table td:first-child {
+        padding-left: 20px;
+      }
+      .explorer-table th:last-child,
+      .explorer-table td:last-child {
+        padding-right: 20px;
+      }
     `}</style>
-    <table className="explorer-table" style={{
-      width: '100%',
-      borderCollapse: 'collapse',
-      minWidth: '1000px',
-      borderRadius: 0,
-      boxShadow: 'none'
-    }}>
-      <thead className="explorer-table-sep" style={{
-        position: 'sticky',
-        top: 0,
-        background: 'var(--bg-secondary)',
-        borderBottom: '1px solid var(--border)',
-        backdropFilter: 'none',
-        zIndex: 1,
-        borderRadius: 0
-      }}>
+    <table className="explorer-table">
+      <thead>
         <tr>
-          <th style={{
-            padding: '14px 20px',
-            textAlign: 'left',
-            fontSize: '12px',
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            width: '40px'
-          }}>
+          <th style={{ width: '40px' }}>
             <input
               type="checkbox"
               checked={selectedRepos.size === filteredRepos.length && filteredRepos.length > 0}
@@ -137,76 +147,22 @@ export default function RepositoryTable({
               style={{ cursor: 'pointer', width: '16px', height: '16px' }}
             />
           </th>
-          <th className="th-sep" style={{
-            padding: '14px 16px',
-            textAlign: 'left',
-            fontSize: '12px',
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            minWidth: '300px'
-          }}>
+          <th style={{ textAlign: 'left', minWidth: '300px' }}>
             镜像名称
           </th>
-          <th className="th-sep" style={{
-            padding: '14px 16px',
-            textAlign: 'left',
-            fontSize: '12px',
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            width: '200px'
-          }}>
+          <th style={{ textAlign: 'left', width: '200px' }}>
             镜像版本
           </th>
-          <th className="th-sep" style={{
-            padding: '14px 16px',
-            textAlign: 'center',
-            fontSize: '12px',
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            width: '100px'
-          }}>
+          <th style={{ textAlign: 'center', width: '100px' }}>
             类型
           </th>
-          <th className="th-sep" style={{
-            padding: '14px 16px',
-            textAlign: 'center',
-            fontSize: '12px',
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            width: '100px'
-          }}>
+          <th style={{ textAlign: 'center', width: '100px' }}>
             版本数量
           </th>
-          <th className="th-sep" style={{
-            padding: '14px 16px',
-            textAlign: 'center',
-            fontSize: '12px',
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            width: '120px'
-          }}>
+          <th style={{ textAlign: 'center', width: '120px' }}>
             下载次数
           </th>
-          <th style={{
-            padding: '14px 20px 14px 16px',
-            textAlign: 'center',
-            fontSize: '12px',
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            width: '140px'
-          }}>
+          <th style={{ textAlign: 'center', width: '140px' }}>
             操作
           </th>
         </tr>
@@ -223,9 +179,7 @@ export default function RepositoryTable({
               <tr
                 key={repo.name}
                 style={{
-                  borderTop: index === 0 ? 'none' : '1px solid var(--border)',
-                  transition: 'background 0.2s',
-                  borderRadius: 0
+                  transition: 'background 0.2s'
                 }}
               >
                 <td style={{
