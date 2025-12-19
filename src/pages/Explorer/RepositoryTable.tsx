@@ -106,7 +106,9 @@ export default function RepositoryTable({
     <table className="explorer-table" style={{
       width: '100%',
       borderCollapse: 'collapse',
-      minWidth: '1000px'
+      minWidth: '1000px',
+      borderRadius: 0,
+      boxShadow: 'none'
     }}>
       <thead className="explorer-table-sep" style={{
         position: 'sticky',
@@ -114,7 +116,8 @@ export default function RepositoryTable({
         background: 'var(--bg-secondary)',
         borderBottom: '1px solid var(--border)',
         backdropFilter: 'none',
-        zIndex: 1
+        zIndex: 1,
+        borderRadius: 0
       }}>
         <tr>
           <th style={{
@@ -221,7 +224,8 @@ export default function RepositoryTable({
                 key={repo.name}
                 style={{
                   borderTop: index === 0 ? 'none' : '1px solid var(--border)',
-                  transition: 'background 0.2s'
+                  transition: 'background 0.2s',
+                  borderRadius: 0
                 }}
               >
                 <td style={{

@@ -143,6 +143,7 @@ export default function Explorer() {
               alignItems: 'center',
               padding: '16px 24px',
               borderTop: '1px solid var(--border)',
+              borderBottom: '1px solid var(--border)',
               background: 'var(--surface)',
               fontSize: 13,
               color: 'var(--text-muted)',
@@ -170,7 +171,17 @@ export default function Explorer() {
                         background: 'var(--surface)',
                         cursor: 'pointer',
                         fontSize: 14,
-                        color: 'var(--text-primary)'
+                        color: 'var(--text-primary)',
+                        transition: 'all 0.2s',
+                        userSelect: 'none'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--primary)'
+                        e.currentTarget.style.background = 'var(--surface-hover)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--border)'
+                        e.currentTarget.style.background = 'var(--surface)'
                       }}
                     >
                       <span>{pageSize}</span>
@@ -185,12 +196,14 @@ export default function Explorer() {
                           style={{
                             position: 'absolute',
                             top: 'calc(100% + 4px)',
+                            left: 0,
                             width: '100%',
                             background: 'var(--surface)',
                             border: '1px solid var(--border)',
                             borderRadius: 4,
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-                            zIndex: 11
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            zIndex: 11,
+                            overflow: 'hidden'
                           }}
                         >
                           {[10, 20, 50].map(size => (
@@ -202,15 +215,25 @@ export default function Explorer() {
                                 setShowPageSizeMenu(false)
                               }}
                               style={{
-                                padding: '8px 0',
+                                padding: '10px 12px',
                                 textAlign: 'center',
                                 cursor: 'pointer',
                                 fontSize: 14,
                                 color: pageSize === size ? 'var(--primary)' : 'var(--text-primary)',
-                                background: pageSize === size ? 'rgba(59, 130, 246, 0.05)' : 'var(--surface)'
+                                background: pageSize === size ? 'rgba(59, 130, 246, 0.05)' : 'var(--surface)',
+                                transition: 'all 0.15s',
+                                borderBottom: size !== 50 ? '1px solid var(--border)' : 'none'
                               }}
-                              onMouseEnter={e => (e.currentTarget.style.background = pageSize === size ? 'rgba(59, 130, 246, 0.1)' : 'var(--surface-hover)')}
-                              onMouseLeave={e => (e.currentTarget.style.background = pageSize === size ? 'rgba(59, 130, 246, 0.05)' : 'var(--surface)')}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = pageSize === size 
+                                  ? 'rgba(59, 130, 246, 0.1)' 
+                                  : 'var(--surface-hover)'
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = pageSize === size 
+                                  ? 'rgba(59, 130, 246, 0.05)' 
+                                  : 'var(--surface)'
+                              }}
                             >
                               {size}
                             </div>
@@ -241,20 +264,20 @@ export default function Explorer() {
                     opacity: 1,
                     transition: 'all 0.2s'
                   }}
-                  onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.color = 'var(--primary)')}
-                  onMouseLeave={(e) => !e.currentTarget.disabled && (e.currentTarget.style.color = 'var(--text-primary)')}
+                  onMouseEnter={(e) => {
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.background = 'var(--surface-hover)'
+                      e.currentTarget.style.color = 'var(--primary)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.background = 'transparent'
+                      e.currentTarget.style.color = 'var(--text-primary)'
+                    }
+                  }}
                 >
-                  <span
-                    style={{
-                      fontSize: 16,
-                      lineHeight: '16px',
-                      display: 'block',
-                      transform: 'translateY(-1px)'
-                    }}
-                    aria-hidden
-                  >
-                    ‹
-                  </span>
+                  <span style={{ fontSize: 16, lineHeight: '16px', display: 'block', transform: 'translateY(-1px)' }} aria-hidden>‹</span>
                 </button>
                 <div
                   style={{
@@ -291,20 +314,20 @@ export default function Explorer() {
                     opacity: 1,
                     transition: 'all 0.2s'
                   }}
-                  onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.color = 'var(--primary)')}
-                  onMouseLeave={(e) => !e.currentTarget.disabled && (e.currentTarget.style.color = 'var(--text-primary)')}
+                  onMouseEnter={(e) => {
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.background = 'var(--surface-hover)'
+                      e.currentTarget.style.color = 'var(--primary)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.background = 'transparent'
+                      e.currentTarget.style.color = 'var(--text-primary)'
+                    }
+                  }}
                 >
-                  <span
-                    style={{
-                      fontSize: 16,
-                      lineHeight: '16px',
-                      display: 'block',
-                      transform: 'translateY(-1px)'
-                    }}
-                    aria-hidden
-                  >
-                    ›
-                  </span>
+                  <span style={{ fontSize: 16, lineHeight: '16px', display: 'block', transform: 'translateY(-1px)' }} aria-hidden>›</span>
                 </button>
               </div>
             </div>
