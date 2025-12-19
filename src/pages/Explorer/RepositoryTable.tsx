@@ -204,13 +204,12 @@ export default function RepositoryTable({
                     alignItems: 'center',
                     gap: '8px'
                   }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
-                      <rect x="3" y="3" width="7" height="7"></rect>
-                      <rect x="14" y="3" width="7" height="7"></rect>
-                      <rect x="14" y="14" width="7" height="7"></rect>
-                      <rect x="3" y="14" width="7" height="7"></rect>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-muted)', marginTop: '1px' }}>
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                      <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                      <line x1="12" y1="22.08" x2="12" y2="12"/>
                     </svg>
-                    <span style={{ fontWeight: 500, whiteSpace: 'nowrap' }}>{repo.name}</span>
+                    <span style={{ fontWeight: 500, whiteSpace: 'nowrap', lineHeight: '16px' }}>{repo.name}</span>
                   </div>
                 </td>
                 <td style={{
@@ -243,6 +242,18 @@ export default function RepositoryTable({
                       background: 'rgba(245, 158, 11, 0.12)',
                       color: '#f59e0b'
                     }
+                    const icon = isPublic ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        <path d="M7 11h10"></path>
+                      </svg>
+                    )
                     return (
                       <span style={{
                         display: 'inline-flex',
@@ -252,8 +263,10 @@ export default function RepositoryTable({
                         borderRadius: '6px',
                         fontSize: '12px',
                         fontWeight: 500,
-                        ...style
+                        background: isPublic ? 'rgba(34, 197, 94, 0.1)' : 'rgba(245, 158, 11, 0.12)',
+                        color: isPublic ? '#22c55e' : '#f59e0b'
                       }}>
+                        {icon}
                         {isPublic ? '公开' : '私有'}
                       </span>
                     )

@@ -9,12 +9,12 @@ export default function ExplorerLayout({ children }: ExplorerLayoutProps) {
     <div style={{
       background: 'var(--surface)',
       border: '1px solid var(--border)',
-      borderRadius: '16px 16px 0 0',
+      borderRadius: '16px',
       height: 'calc(100vh - 130px)',
       display: 'flex',
       flexDirection: 'column',
-      overflow: 'visible',
-      boxShadow: 'none',
+      overflow: 'hidden',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
       margin: '100px 24px 24px 24px',
       position: 'relative'
     }}>

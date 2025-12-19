@@ -46,7 +46,7 @@ export default function Settings() {
       const data = await res.json()
       if (data.success) {
         setConnectionStatus('success')
-        setResult({ ok: true, message: `已连接到 Harbor (发现 ${data.data?.projects?.length || 0} 个项目)`, projects: data.data?.projects })
+        setResult({ ok: true, message: `已连接到 HARBOR (发现 ${data.data?.projects?.length || 0} 个项目)`, projects: data.data?.projects })
       } else {
         setConnectionStatus('error')
         setResult({ ok: false, message: data.message })
@@ -66,7 +66,7 @@ export default function Settings() {
   }
 
   const getStatusText = () => {
-    if (connectionStatus === 'success') return '已连接到 Harbor'
+    if (connectionStatus === 'success') return '已连接到 HARBOR'
     if (connectionStatus === 'error') return '连接失败'
     return '待测试连接'
   }
@@ -74,10 +74,10 @@ export default function Settings() {
   return (
     <div style={{ position: 'relative', minHeight: '100vh' }}>
       {/* 标题区域 */}
-      <div style={{ position: 'absolute', left: TITLE_LEFT, top: TITLE_TOP, zIndex: 10 }}>
+      <div style={{ position: 'absolute', left: 50, top: TITLE_TOP, zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
           <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
-            Harbor 连接配置
+            HARBOR 连接配置
           </h1>
           <div 
             onMouseEnter={() => { if (hideTimer.current) clearTimeout(hideTimer.current); setShowHelp(true) }}
@@ -96,7 +96,7 @@ export default function Settings() {
                 onMouseLeave={() => { hideTimer.current = window.setTimeout(() => setShowHelp(false), 150) }}
                 style={{ position: 'absolute', top: '50%', left: 32, transform: 'translateY(-50%)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '10px 14px', boxShadow: '0 8px 20px rgba(0,0,0,0.08)', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'nowrap', zIndex: 10 }}
               >
-                <span style={{ fontSize: 12 }}>配置并管理远程 Harbor 仓库连接</span>
+                <span style={{ fontSize: 12 }}>配置并管理远程 HARBOR 仓库连接</span>
                 <div style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)', width: 10, height: 10, background: 'var(--surface)', borderLeft: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}></div>
               </div>
             )}
@@ -144,10 +144,9 @@ export default function Settings() {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
-                  <rect x="3" y="3" width="7" height="7"></rect>
-                  <rect x="14" y="3" width="7" height="7"></rect>
-                  <rect x="14" y="14" width="7" height="7"></rect>
-                  <rect x="3" y="14" width="7" height="7"></rect>
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                 </svg>
                 <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', display: 'block', margin: 0 }}>Harbor 地址</label>
               </div>
@@ -169,7 +168,7 @@ export default function Settings() {
                   transition: 'all 0.2s'
                 }}
               />
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>输入 Harbor 服务器的完整地址</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>输入 HARBOR 服务器的完整地址</div>
             </div>
 
             {/* 用户名 */}
@@ -199,7 +198,7 @@ export default function Settings() {
                   transition: 'all 0.2s'
                 }}
               />
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>用于连接 Harbor 的用户账户</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>用于连接 HARBOR 的用户账户</div>
             </div>
 
             {/* 密码 */}
