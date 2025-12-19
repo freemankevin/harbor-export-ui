@@ -6,6 +6,7 @@ export default function SystemPage() {
   const cfg = loadConfig()
   const [info, setInfo] = useState<any>(null)
   const [health, setHealth] = useState<any>(null)
+  void health // 抑制未使用警告
   const [logs, setLogs] = useState<string[]>([])
   const [ops, setOps] = useState<any[]>([])
   const [operator, setOperator] = useState(cfg?.username || '')

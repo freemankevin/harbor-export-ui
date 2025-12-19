@@ -9,7 +9,7 @@ import OpsLogs from './pages/OpsLogs'
 function App() {
   const [tab, setTab] = useState<'settings' | 'explorer' | 'monitor' | 'syslog' | 'oplog'>('settings')
   const [theme, setTheme] = useState<'dark' | 'light'>((localStorage.getItem('theme') as 'dark' | 'light') || 'dark')
-  const [apiVer, setApiVer] = useState<string>('')
+  // const [apiVer, setApiVer] = useState<string>('') // 移除未使用的变量
   const [collapsed, setCollapsed] = useState(false)
   const [sysOpen, setSysOpen] = useState(false)
 
@@ -18,12 +18,12 @@ function App() {
     localStorage.setItem('theme', theme)
   }, [theme])
 
-  useEffect(() => {
-    fetch('/api/system/info').then(async r => {
-      const d = await r.json()
-      if (d?.data?.harbor_api_version) setApiVer(String(d.data.harbor_api_version))
-    }).catch(() => { })
-  }, [])
+  // useEffect(() => {
+  //   fetch('/api/system/info').then(async r => {
+  //     const d = await r.json()
+  //     if (d?.data?.harbor_api_version) setApiVer(String(d.data.harbor_api_version))
+  //   }).catch(() => { })
+  // }, [])
 
   const menuItems = [
     { id: 'settings', label: '配置管理' },

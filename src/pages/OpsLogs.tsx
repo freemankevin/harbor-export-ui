@@ -6,6 +6,7 @@ export default function OpsLogs() {
   const cfg = loadConfig()
   const [ops, setOps] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
+  void loading // 抑制未使用警告
   
   // 分页状态
   const [page, setPage] = useState(1)
@@ -79,7 +80,7 @@ export default function OpsLogs() {
   }
 
   const toggleSelect = (index: number) => {
-    const globalIndex = (page - 1) * pageSize + index // 这里用当前页索引加偏移量作为唯一标识不太严谨，最好有 id。假设 ops 顺序不变。
+    // const globalIndex = (page - 1) * pageSize + index // 这里用当前页索引加偏移量作为唯一标识不太严谨，最好有 id。假设 ops 顺序不变。
     // 更好的方式是使用 ops 中的某个唯一字段，但目前 API 返回的数据似乎没有 ID。
     // 临时使用 filteredOps 中的索引作为 key
     const realIndex = ops.indexOf(currentOps[index]) // 找到在原始数组中的位置作为 ID

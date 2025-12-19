@@ -3,6 +3,7 @@ export type HarborConfig = {
   username: string
   password: string
   id?: string
+  operator?: string // 添加可选属性
 }
 
 const KEY = 'harbor_config_v1'

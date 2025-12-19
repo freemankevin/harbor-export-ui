@@ -67,7 +67,7 @@ export const DockerAPI = {
     const total = Number(res.headers.get('Content-Length') || '') || undefined
     if (res.body) {
       const reader = res.body.getReader()
-      const chunks: Uint8Array[] = []
+      const chunks: BlobPart[] = []
       let loaded = 0
       while (true) {
         const { done, value } = await reader.read()
