@@ -94,15 +94,21 @@ export default function RepositoryTable({
   return (
     <>
     <style>{`
-      .repo-header th.th-sep { position: relative; }
-      .repo-header th.th-sep::after { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 66%; width: 1px; background: var(--border); }
+      .explorer-table-sep th.th-sep { position: relative; }
+      .explorer-table-sep th.th-sep::after { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 66%; width: 1px; background: var(--border); }
+      .explorer-table tbody tr {
+        border-radius: 0 !important;
+      }
+      .explorer-table tbody tr:hover {
+        background-color: var(--surface-hover);
+      }
     `}</style>
-    <table className="repo-table" style={{
+    <table className="explorer-table" style={{
       width: '100%',
       borderCollapse: 'collapse',
       minWidth: '1000px'
     }}>
-      <thead className="repo-header" style={{
+      <thead className="explorer-table-sep" style={{
         position: 'sticky',
         top: 0,
         background: 'var(--bg-secondary)',
@@ -193,7 +199,7 @@ export default function RepositoryTable({
             textAlign: 'center',
             fontSize: '12px',
             fontWeight: 600,
-            color: '#94a3b8',
+            color: 'var(--text-muted)',
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
             width: '140px'
@@ -214,14 +220,8 @@ export default function RepositoryTable({
               <tr
                 key={repo.name}
                 style={{
-                  borderTop: index === 0 ? 'none' : '1px solid rgba(71, 85, 105, 0.3)',
+                  borderTop: index === 0 ? 'none' : '1px solid var(--border)',
                   transition: 'background 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--surface-hover)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent'
                 }}
               >
                 <td style={{

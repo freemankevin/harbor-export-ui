@@ -101,7 +101,7 @@ export default function Explorer() {
         />
 
         {/* 右侧镜像列表 */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
           {/* 搜索和操作栏 */}
           <SearchToolbar
             searchQuery={searchQuery}
@@ -114,8 +114,8 @@ export default function Explorer() {
           {/* 进度显示 */}
           <DownloadProgress downloading={downloading} progress={progress} />
 
-          {/* 镜像表格 */}
-          <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', borderBottom: '1px solid var(--border)' }}>
+          {/* 镜像表格 - 可滚动 */}
+          <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto' }}>
             <RepositoryTable
               selectedProject={selectedProject}
               loading={loading}
@@ -135,41 +135,94 @@ export default function Explorer() {
             />
           </div>
 
-          {/* 分页栏 */}
+          {/* 分页栏 - 不可滚动，紧跟表格 */}
           {total > 0 && (
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              padding: '12px 24px',
+              padding: '16px 24px',
               borderTop: '1px solid var(--border)',
-              background: 'var(--bg-secondary)',
+              background: 'var(--surface)',
               fontSize: 13,
-              color: 'var(--text-secondary)'
+              color: 'var(--text-muted)',
+              flexShrink: 0,
+              position: 'relative',
+              zIndex: 10
             }}>
+              {/* 左侧：统计信息 */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div>共 {total} 条记录</div>
+                <div>共 <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{total}</span> 条记录</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   每页显示
-                  <select
-                    value={pageSize}
-                    onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      color: 'var(--text-primary)',
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                      outline: 'none'
-                    }}
-                  >
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                  </select>
+                  <div style={{ position: 'relative' }}>
+                    <div
+                      onClick={() => setShowPageSizeMenu(!showPageSizeMenu)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: 60,
+                        height: 32,
+                        padding: '0 8px',
+                        border: '1px solid var(--border)',
+                        borderRadius: 4,
+                        background: 'var(--surface)',
+                        cursor: 'pointer',
+                        fontSize: 14,
+                        color: 'var(--text-primary)'
+                      }}
+                    >
+                      <span>{pageSize}</span>
+                      <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" style={{ transform: showPageSizeMenu ? 'rotate(180deg)' : 'none', transition: '0.2s' }}>
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+                    {showPageSizeMenu && (
+                      <>
+                        <div style={{ position: 'fixed', inset: 0, zIndex: 10 }} onClick={() => setShowPageSizeMenu(false)} />
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: 'calc(100% + 4px)',
+                            width: '100%',
+                            background: 'var(--surface)',
+                            border: '1px solid var(--border)',
+                            borderRadius: 4,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                            zIndex: 11
+                          }}
+                        >
+                          {[10, 20, 50].map(size => (
+                            <div
+                              key={size}
+                              onClick={() => {
+                                setPageSize(size)
+                                setPage(1)
+                                setShowPageSizeMenu(false)
+                              }}
+                              style={{
+                                padding: '8px 0',
+                                textAlign: 'center',
+                                cursor: 'pointer',
+                                fontSize: 14,
+                                color: pageSize === size ? 'var(--primary)' : 'var(--text-primary)',
+                                background: pageSize === size ? 'rgba(59, 130, 246, 0.05)' : 'var(--surface)'
+                              }}
+                              onMouseEnter={e => (e.currentTarget.style.background = pageSize === size ? 'rgba(59, 130, 246, 0.1)' : 'var(--surface-hover)')}
+                              onMouseLeave={e => (e.currentTarget.style.background = pageSize === size ? 'rgba(59, 130, 246, 0.05)' : 'var(--surface)')}
+                            >
+                              {size}
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
-              
+
+              {/* 右侧：翻页按钮 */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <button
                   disabled={page === 1}
@@ -184,15 +237,17 @@ export default function Explorer() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: page === 1 ? '#94a3b8' : '#333',
-                    opacity: 1
+                    color: page === 1 ? 'var(--text-disabled)' : 'var(--text-primary)',
+                    opacity: 1,
+                    transition: 'all 0.2s'
                   }}
+                  onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.color = 'var(--primary)')}
+                  onMouseLeave={(e) => !e.currentTarget.disabled && (e.currentTarget.style.color = 'var(--text-primary)')}
                 >
                   <span
                     style={{
                       fontSize: 16,
                       lineHeight: '16px',
-                      color: page === 1 ? '#94a3b8' : '#333',
                       display: 'block',
                       transform: 'translateY(-1px)'
                     }}
@@ -213,7 +268,8 @@ export default function Explorer() {
                     fontWeight: 500,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    fontSize: 13
                   }}
                 >
                   {page}
@@ -231,15 +287,17 @@ export default function Explorer() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: page >= totalPages ? '#94a3b8' : '#333',
-                    opacity: 1
+                    color: page >= totalPages ? 'var(--text-disabled)' : 'var(--text-primary)',
+                    opacity: 1,
+                    transition: 'all 0.2s'
                   }}
+                  onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.color = 'var(--primary)')}
+                  onMouseLeave={(e) => !e.currentTarget.disabled && (e.currentTarget.style.color = 'var(--text-primary)')}
                 >
                   <span
                     style={{
                       fontSize: 16,
                       lineHeight: '16px',
-                      color: page >= totalPages ? '#94a3b8' : '#333',
                       display: 'block',
                       transform: 'translateY(-1px)'
                     }}
