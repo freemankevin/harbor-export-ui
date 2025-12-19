@@ -60,7 +60,7 @@ export default function SysLogs() {
     height: 'calc(100vh - 130px)',
     padding: 0,
     overflow: 'hidden', // 确保圆角不被子元素遮挡
-    margin: '100px 32px 32px 32px',
+    margin: '100px 24px 24px 24px',
     borderRadius: '16px'
   }
 

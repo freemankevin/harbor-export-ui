@@ -112,7 +112,7 @@ export default function Settings() {
           borderRadius: 16,
           padding: 32,
           boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-          margin: '100px 32px 32px 32px',
+          margin: '100px 24px 24px 24px',
         }}>
           {/* 连接状态指示器 */}
           <div style={{ 

@@ -10,7 +10,7 @@ function App() {
   const [tab, setTab] = useState<'settings' | 'explorer' | 'monitor' | 'syslog' | 'oplog'>('settings')
   const [theme, setTheme] = useState<'dark' | 'light'>((localStorage.getItem('theme') as 'dark' | 'light') || 'dark')
   // const [apiVer, setApiVer] = useState<string>('') // 移除未使用的变量
-  const [collapsed, setCollapsed] = useState(false)
+  // const [collapsed, setCollapsed] = useState(false)
   const [sysOpen, setSysOpen] = useState(false)
 
   useEffect(() => {
@@ -31,26 +31,19 @@ function App() {
   ]
 
   return (
-    <div className={`layout ${collapsed ? 'collapsed' : ''}`}>
+    <div className="layout">
       {/* 侧边栏 */}
-      <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
-        {/* 折叠按钮 */}
-        <button
-          className="sidebar-toggle"
-          onClick={() => setCollapsed(!collapsed)}
-          title={collapsed ? '展开' : '折叠'}
-          aria-label={collapsed ? '展开侧边栏' : '折叠侧边栏'}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-        </button>
-
+      <aside className="sidebar">
+        {/* 折叠按钮 - 已移除 */}
+        
         {/* 标题 */}
         <div className="title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <img src="/vite.svg" alt="logo" style={{ width: 20, height: 20 }} />
           容器镜像服务
         </div>
+
+        {/* 分割线 */}
+        <div style={{ height: 1, background: 'var(--border)', margin: '0 16px 8px 16px' }}></div>
 
         {/* 菜单 */}
         <div className="menu">
@@ -59,33 +52,30 @@ function App() {
               key={item.id}
               className={tab === item.id ? 'active' : ''}
               onClick={() => setTab(item.id as any)}
-              title={collapsed ? item.label : undefined}
             >
               {item.label}
             </button>
           ))}
 
-          {!collapsed && (
-            <button
-              className={`menu-group-header ${sysOpen ? 'open' : 'closed'}`}
-              onClick={() => setSysOpen(!sysOpen)}
-            >
-              <span>系统管理</span>
-              <span className="chevron">
-                {sysOpen ? (
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M2 3 L5 6 L8 3" />
-                  </svg>
-                ) : (
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 2 L6 5 L3 8" />
-                  </svg>
-                )}
-              </span>
-            </button>
-          )}
+          <button
+            className={`menu-group-header ${sysOpen ? 'open' : 'closed'}`}
+            onClick={() => setSysOpen(!sysOpen)}
+          >
+            <span>系统管理</span>
+            <span className="chevron">
+              {sysOpen ? (
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 3 L5 6 L8 3" />
+                </svg>
+              ) : (
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 2 L6 5 L3 8" />
+                </svg>
+              )}
+            </span>
+          </button>
 
-          {sysOpen && !collapsed && (
+          {sysOpen && (
             <div className="menu-group-children">
               <button
                 className={tab === 'monitor' ? 'active' : ''}
@@ -128,19 +118,7 @@ function App() {
 
       {/* 主内容区域 */}
       <div className="main-content" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
-        {/* 展开按钮 - 仅在侧边栏折叠时显示 */}
-        {collapsed && (
-          <button
-            className="sidebar-expand-btn"
-            onClick={() => setCollapsed(false)}
-            title="展开侧边栏"
-            aria-label="展开侧边栏"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-        )}
+        {/* 展开按钮 - 已移除 */}
         
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'auto' }}>
           {tab === 'settings' && <Settings />}

@@ -96,7 +96,6 @@ export default function RepositoryTable({
     <style>{`
       .repo-header th.th-sep { position: relative; }
       .repo-header th.th-sep::after { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 66%; width: 1px; background: var(--border); }
-      .repo-table tbody tr:last-child td { border-bottom: 1px solid var(--border); }
     `}</style>
     <table className="repo-table" style={{
       width: '100%',
@@ -106,7 +105,8 @@ export default function RepositoryTable({
       <thead className="repo-header" style={{
         position: 'sticky',
         top: 0,
-        background: 'var(--surface-hover)',
+        background: 'var(--bg-secondary)',
+        borderBottom: '1px solid var(--border)',
         backdropFilter: 'none',
         zIndex: 1
       }}>

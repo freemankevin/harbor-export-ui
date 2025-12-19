@@ -291,7 +291,7 @@ export default function Monitor() {
           )}
         </div>
       </div>
-      <div style={{ padding: '100px 32px 32px 32px' }}>
+      <div style={{ padding: '100px 24px 24px 24px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16 }}>
         <style>{`
           @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -303,7 +303,7 @@ export default function Monitor() {
         @keyframes fadeUp { 0% { opacity: 0; transform: translate(-50%, 8px); } 100% { opacity: 1; transform: translate(-50%, 0); } }
       `}</style>
       {/* 左侧区域：移除卡片背景和边框，直接展示内容，并调整上边距使其对齐右侧第二个卡片中线 */}
-      <div style={{ padding: '100px 16px 16px 16px', display: 'flex', flexDirection: 'column', gap: 12, minHeight: 'calc(100vh - 100px)' }}>
+      <div style={{ padding: '100px 16px 16px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Radar values={radarValues} size={240} diagnosing={diagnosing} />
         </div>
@@ -380,7 +380,7 @@ export default function Monitor() {
         )}
       </div>
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', minHeight: 'calc(100vh - 100px)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
         <Card 
           title="CPU用量"
         percent={cpu.percent || 0}

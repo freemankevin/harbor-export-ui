@@ -164,7 +164,17 @@ export default function OpsLogs() {
           )}
         </div>
       </div>
-      <div className="panel" style={{ display: 'flex', flexDirection: 'column', padding: 0, position: 'relative', zIndex: 1, height: 'calc(100vh - 130px)', overflow: 'hidden', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', margin: '100px 32px 32px 32px' }}>
+      <div style={{
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
+        borderRadius: '16px',
+        height: 'calc(100vh - 130px)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        boxShadow: 'none',
+        margin: '100px 24px 24px 24px'
+      }}>
         <div style={{ padding: '16px 24px 0' }}>
         <div style={{ display: 'flex', gap: 12 }}>
             <div style={{ 

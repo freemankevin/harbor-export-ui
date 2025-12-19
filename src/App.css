@@ -9,7 +9,7 @@
 /* ============ 布局 ============ */
 .layout {
   display: grid;
-  grid-template-columns: 240px 2fr;
+  grid-template-columns: 180px 1fr;
   gap: 0;
   height: 100vh;
   min-height: 100vh;
@@ -36,7 +36,7 @@
   font-family: var(--font-body);
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 220px;
+  width: 180px;
 }
 
 .sidebar.collapsed {
