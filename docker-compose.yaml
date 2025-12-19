@@ -4,7 +4,7 @@ services:
     # build: 
     #   context: .
     #   dockerfile: Dockerfile
-    image: harbor-export-ui:latest
+    image: freelabspace/harbor-export-ui:latest
     container_name: harbor-export-ui
     ports:
       - "80:80"
@@ -12,7 +12,7 @@ services:
       # 后端 API 地址，请根据实际情况修改
       # 如果后端在宿主机上运行，可以使用 http://localhost:5001 (Windows/Mac)
       # 或者使用宿主机的局域网 IP
-      - BACKEND_URL=http://localhost:5001
+      - BACKEND_URL=${BACKEND_URL}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
