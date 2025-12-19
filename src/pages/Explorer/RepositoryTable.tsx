@@ -168,7 +168,7 @@ export default function RepositoryTable({
         </tr>
       </thead>
       <tbody>
-        {filteredRepos.map((repo, index) => {
+        {filteredRepos.map((repo) => {
           const isSelected = selectedRepos.has(repo.name)
           const selectedTag = selectedRepos.get(repo.name) || ''
           const tags = repoTags.get(repo.name) || []
@@ -235,13 +235,6 @@ export default function RepositoryTable({
                 }}>
                   {(() => {
                     const isPublic = projects.find(p => p.name === selectedProject)?.public
-                    const style = isPublic ? {
-                      background: 'rgba(59, 130, 246, 0.1)',
-                      color: '#3b82f6'
-                    } : {
-                      background: 'rgba(245, 158, 11, 0.12)',
-                      color: '#f59e0b'
-                    }
                     const icon = isPublic ? (
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>

@@ -14,7 +14,7 @@ export default function Settings() {
   const [showPwd, setShowPwd] = useState(false)
   const [focused, setFocused] = useState<'url' | 'username' | 'password' | null>(null)
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const TITLE_LEFT = 30
+
   const TITLE_TOP = 46
 
   useEffect(() => {
