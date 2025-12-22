@@ -13,7 +13,7 @@ export function useExplorerState() {
   const [repoTags, setRepoTags] = useState<Map<string, string[]>>(new Map())
   const [downloading, setDownloading] = useState(false)
   const [progress, setProgress] = useState<{loaded: number, total?: number} | null>(null)
-  const [expandedRepo, setExpandedRepo] = useState<string | null>(null)
+
   const [loadingTags, setLoadingTags] = useState<Set<string>>(new Set())
 
   // 加载项目列表
@@ -38,7 +38,7 @@ export function useExplorerState() {
     setLoading(true)
     setSelectedRepos(new Map())
     setRepoTags(new Map())
-    setExpandedRepo(null)
+
     HarborAPI.repositories(cfg, selectedProject)
       .then(d => setRepositories(d.repositories || []))
       .catch(() => setRepositories([]))
@@ -192,15 +192,7 @@ export function useExplorerState() {
     }
   }
 
-  // 展开/收起镜像版本
-  const toggleExpandRepo = async (repoName: string) => {
-    if (expandedRepo === repoName) {
-      setExpandedRepo(null)
-    } else {
-      await loadRepoTags(repoName)
-      setExpandedRepo(repoName)
-    }
-  }
+
 
   // 搜索过滤
   const filteredRepos = repositories.filter(repo =>
@@ -220,7 +212,6 @@ export function useExplorerState() {
     repoTags,
     downloading,
     progress,
-    expandedRepo,
     filteredRepos,
     loadingTags,
     loadRepoTags,
@@ -228,7 +219,6 @@ export function useExplorerState() {
     changeRepoTag,
     toggleSelectAll,
     handleBatchDownload,
-    handleSingleDownload,
-    toggleExpandRepo
+    handleSingleDownload
   }
 }

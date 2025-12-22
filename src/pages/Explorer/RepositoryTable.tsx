@@ -1,5 +1,5 @@
 import type { Repository, Project } from '../../api/client'
-import TagSelector from './TagSelector'
+import VersionSelector from './VersionSelector'
 
 interface RepositoryTableProps {
   selectedProject: string | null
@@ -8,14 +8,11 @@ interface RepositoryTableProps {
   projects: Project[]
   selectedRepos: Map<string, string>
   repoTags: Map<string, string[]>
-  expandedRepo: string | null
   downloading: boolean
   searchQuery: string
-  loadingTags: Set<string>
   onToggleSelectAll: () => void
   onToggleSelectRepo: (repoName: string, checked: boolean) => void
   onChangeRepoTag: (repoName: string, tag: string) => void
-  onToggleExpandRepo: (repoName: string) => void
   onSingleDownload: (repoName: string, tag: string) => void
 }
 
@@ -26,14 +23,12 @@ export default function RepositoryTable({
   projects,
   selectedRepos,
   repoTags,
-  expandedRepo,
   downloading,
   searchQuery,
-  loadingTags,
+
   onToggleSelectAll,
   onToggleSelectRepo,
   onChangeRepoTag,
-  onToggleExpandRepo,
   onSingleDownload
 }: RepositoryTableProps) {
   if (!selectedProject) {
@@ -151,10 +146,10 @@ export default function RepositoryTable({
               style={{ cursor: 'pointer', width: '16px', height: '16px', margin: 0 }}
             />
           </th>
-          <th style={{ textAlign: 'left', minWidth: '300px' }}>
+          <th style={{ textAlign: 'left', minWidth: '260px' }}>
             镜像名称
           </th>
-          <th style={{ textAlign: 'left', width: '200px' }}>
+          <th style={{ textAlign: 'left', width: '200px', paddingLeft: '16px' }}>
             镜像版本
           </th>
           <th style={{ textAlign: 'center', width: '100px' }}>
@@ -176,16 +171,14 @@ export default function RepositoryTable({
           const isSelected = selectedRepos.has(repo.name)
           const selectedTag = selectedRepos.get(repo.name) || ''
           const tags = repoTags.get(repo.name) || []
-          const isExpanded = expandedRepo === repo.name
 
           return (
-            <>
-              <tr
-                key={repo.name}
-                style={{
-                  transition: 'background 0.2s'
-                }}
-              >                <td style={{
+            <tr
+              key={repo.name}
+              style={{
+                transition: 'background 0.2s'
+              }}
+            >                <td style={{
                   fontSize: '14px',
                   color: 'var(--text-secondary)'
                 }}>                  <input
@@ -215,14 +208,13 @@ export default function RepositoryTable({
                   fontSize: '14px',
                   color: 'var(--text-secondary)'
                 }}>
-                  <TagSelector
+                  <VersionSelector
                     repoName={repo.name}
-                    isSelected={isSelected}
                     selectedTag={selectedTag}
                     tags={tags}
-                    isExpanded={isExpanded}
                     onTagChange={onChangeRepoTag}
-                    onToggleExpand={onToggleExpandRepo}
+                    disabled={downloading}
+                    selectedProject={selectedProject || ''}
                   />
                 </td>                <td style={{
                   fontSize: '14px',
@@ -310,32 +302,6 @@ export default function RepositoryTable({
                   </button>
                 </td>
               </tr>
-              {isExpanded && (
-                <tr>
-                  <td colSpan={7} style={{ padding:'10px 16px', background:'var(--surface-hover)' }}>
-                    <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
-                      {loadingTags.has(repo.name) ? (
-                        <span style={{ color:'var(--text-muted)' }}>加载中...</span>
-                      ) : tags.length > 0 ? tags.map(tag => (
-                        <div key={tag} style={{ display:'flex', alignItems:'center', gap:8, padding:'6px 10px', border:'1px solid var(--border)', borderRadius:6, background:'var(--surface)' }}>
-                          <span style={{ color:'var(--text-secondary)', fontSize:13 }}>{tag}</span>
-                          <button
-                            onClick={() => onChangeRepoTag(repo.name, tag)}
-                            className="btn-ghost"
-                          >设为选择</button>
-                          <button
-                            onClick={() => onSingleDownload(repo.name, tag)}
-                            className="btn-ghost"
-                          >下载</button>
-                        </div>
-                      )) : (
-                        <span style={{ color:'var(--text-muted)' }}>正在加载或无标签</span>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </>
           )
         })}
       </tbody>

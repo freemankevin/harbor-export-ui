@@ -19,15 +19,14 @@ export default function Explorer() {
     repoTags,
     downloading,
     progress,
-    expandedRepo,
+
     filteredRepos,
-    loadingTags,
+
     toggleSelectRepo,
     changeRepoTag,
     toggleSelectAll,
     handleBatchDownload,
-    handleSingleDownload,
-    toggleExpandRepo
+    handleSingleDownload
   } = useExplorerState()
 
   // 页面标题与帮助气泡状态
@@ -123,14 +122,12 @@ export default function Explorer() {
               projects={projects}
               selectedRepos={selectedRepos}
               repoTags={repoTags}
-              expandedRepo={expandedRepo}
               downloading={downloading}
               searchQuery={searchQuery}
-              loadingTags={loadingTags}
+
               onToggleSelectAll={() => toggleSelectAll(currentRepos)}
               onToggleSelectRepo={toggleSelectRepo}
               onChangeRepoTag={changeRepoTag}
-              onToggleExpandRepo={toggleExpandRepo}
               onSingleDownload={handleSingleDownload}
             />
           </div>
