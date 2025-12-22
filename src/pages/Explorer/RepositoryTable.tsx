@@ -96,18 +96,22 @@ export default function RepositoryTable({
     <style>{`
       .explorer-table {
         border-collapse: collapse;
-        border: none;
+        border: 1px solid var(--border);
         width: 100%;
         min-width: 1000px;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: visible;
       }
       .explorer-table th,
       .explorer-table td {
         border: none;
         border-bottom: 1px solid var(--border);
-        height: 48px;
+        height: 42px;
         padding: 8px 16px;
         vertical-align: middle;
         box-sizing: border-box;
+        line-height: 26px;
       }
       .explorer-table th {
         background: var(--bg-secondary);
@@ -119,6 +123,7 @@ export default function RepositoryTable({
         position: sticky;
         top: 0;
         z-index: 1;
+        line-height: 24px;
       }
       .explorer-table td {
         font-size: 14px;
@@ -139,12 +144,11 @@ export default function RepositoryTable({
     <table className="explorer-table">
       <thead>
         <tr>
-          <th style={{ width: '40px' }}>
-            <input
+          <th style={{ width: '40px' }}>            <input
               type="checkbox"
               checked={selectedRepos.size === filteredRepos.length && filteredRepos.length > 0}
               onChange={onToggleSelectAll}
-              style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+              style={{ cursor: 'pointer', width: '16px', height: '16px', margin: 0 }}
             />
           </th>
           <th style={{ textAlign: 'left', minWidth: '300px' }}>
@@ -181,21 +185,16 @@ export default function RepositoryTable({
                 style={{
                   transition: 'background 0.2s'
                 }}
-              >
-                <td style={{
-                  padding: '14px 20px',
+              >                <td style={{
                   fontSize: '14px',
                   color: 'var(--text-secondary)'
-                }}>
-                  <input
+                }}>                  <input
                     type="checkbox"
                     checked={isSelected}
                     onChange={(e) => onToggleSelectRepo(repo.name, e.target.checked)}
-                    style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                    style={{ cursor: 'pointer', width: '16px', height: '16px', margin: 0 }}
                   />
-                </td>
-                <td style={{
-                  padding: '14px 16px',
+                </td>                <td style={{
                   fontSize: '14px',
                   color: 'var(--text-secondary)'
                 }}>
@@ -213,7 +212,6 @@ export default function RepositoryTable({
                   </div>
                 </td>
                 <td style={{
-                  padding: '14px 16px',
                   fontSize: '14px',
                   color: 'var(--text-secondary)'
                 }}>
@@ -226,9 +224,7 @@ export default function RepositoryTable({
                     onTagChange={onChangeRepoTag}
                     onToggleExpand={onToggleExpandRepo}
                   />
-                </td>
-                <td style={{
-                  padding: '14px 16px',
+                </td>                <td style={{
                   fontSize: '14px',
                   color: 'var(--text-secondary)',
                   textAlign: 'center'
@@ -264,25 +260,19 @@ export default function RepositoryTable({
                       </span>
                     )
                   })()}
-                </td>
-                <td style={{
-                  padding: '14px 16px',
+                </td>                <td style={{
                   fontSize: '14px',
                   color: 'var(--text-secondary)',
                   textAlign: 'center'
                 }}>
                   {repo.artifact_count || repo.tags?.length || 0}
-                </td>
-                <td style={{
-                  padding: '14px 16px',
+                </td>                <td style={{
                   fontSize: '14px',
                   color: 'var(--text-secondary)',
                   textAlign: 'center'
                 }}>
                   {repo.pull_count || 0}
-                </td>
-                <td style={{
-                  padding: '14px 20px 14px 16px',
+                </td>                <td style={{
                   fontSize: '14px',
                   color: 'var(--text-secondary)',
                   textAlign: 'center'
@@ -291,7 +281,7 @@ export default function RepositoryTable({
                     onClick={() => onSingleDownload(repo.name, selectedTag)}
                     disabled={downloading || !selectedTag}
                     style={{
-                      padding: '6px 16px',
+                      padding: '4px 12px',
                       background: 'var(--surface)',
                       border: '1px solid var(--border)',
                       borderRadius: '6px',
@@ -300,7 +290,8 @@ export default function RepositoryTable({
                       fontWeight: 500,
                       cursor: downloading ? 'not-allowed' : 'pointer',
                       transition: 'all 0.2s',
-                      opacity: downloading ? 0.5 : 1
+                      opacity: downloading ? 0.5 : 1,
+                      lineHeight: '20px'
                     }}
                     onMouseEnter={(e) => {
                       if (!downloading) {

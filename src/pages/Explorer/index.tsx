@@ -142,8 +142,6 @@ export default function Explorer() {
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '16px 24px',
-              borderTop: '1px solid var(--border)',
-              borderBottom: '1px solid var(--border)',
               background: 'var(--surface)',
               fontSize: 13,
               color: 'var(--text-muted)',
@@ -154,8 +152,7 @@ export default function Explorer() {
               {/* 左侧：统计信息 */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div>共 <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{total}</span> 条记录</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  每页显示
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>每页显示
                   <div style={{ position: 'relative' }}>
                     <div
                       onClick={() => setShowPageSizeMenu(!showPageSizeMenu)}
@@ -191,19 +188,46 @@ export default function Explorer() {
                     </div>
                     {showPageSizeMenu && (
                       <>
-                        <div style={{ position: 'fixed', inset: 0, zIndex: 10 }} onClick={() => setShowPageSizeMenu(false)} />
+                        <div style={{ position: 'fixed', inset: 0, zIndex: 1000 }} onClick={() => setShowPageSizeMenu(false)} />
                         <div
                           style={{
-                            position: 'absolute',
-                            top: 'calc(100% + 4px)',
-                            left: 0,
-                            width: '100%',
+                            position: 'fixed',
+                            top: 'auto',
+                            left: 'auto',
+                            width: '60px',
+                            maxHeight: '200px',
+                            overflowY: 'auto',
                             background: 'var(--surface)',
                             border: '1px solid var(--border)',
                             borderRadius: 4,
                             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            zIndex: 11,
-                            overflow: 'hidden'
+                            zIndex: 1001
+                          }}
+                          ref={(el) => {
+                            if (el && showPageSizeMenu) {
+                              const button = el.parentElement?.querySelector('div');
+                              if (button) {
+                                const rect = button.getBoundingClientRect();
+                                const spaceBelow = window.innerHeight - rect.bottom;
+                                const spaceAbove = rect.top;
+                                
+                                // 优先显示在下方，如果空间不足则显示在上方
+                                if (spaceBelow >= 120) {
+                                  el.style.left = rect.left + 'px';
+                                  el.style.top = (rect.bottom + 4) + 'px';
+                                  el.style.maxHeight = Math.min(spaceBelow - 8, 150) + 'px';
+                                } else if (spaceAbove >= 120) {
+                                  el.style.left = rect.left + 'px';
+                                  el.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+                                  el.style.maxHeight = Math.min(spaceAbove - 8, 150) + 'px';
+                                } else {
+                                  el.style.left = rect.left + 'px';
+                                  el.style.top = (rect.bottom + 4) + 'px';
+                                  el.style.maxHeight = '150px';
+                                }
+                                el.style.width = rect.width + 'px';
+                              }
+                            }
                           }}
                         >
                           {[10, 20, 50].map(size => (
