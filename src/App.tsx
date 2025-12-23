@@ -8,7 +8,7 @@ import OpsLogs from './pages/OpsLogs'
 
 function App() {
   const [tab, setTab] = useState<'settings' | 'explorer' | 'monitor' | 'syslog' | 'oplog'>('settings')
-  const [theme, setTheme] = useState<'dark' | 'light'>((localStorage.getItem('theme') as 'dark' | 'light') || 'dark')
+  const [theme, setTheme] = useState<'dark' | 'light'>((localStorage.getItem('theme') as 'dark' | 'light') || 'light')
   // const [apiVer, setApiVer] = useState<string>('') // 移除未使用的变量
   // const [collapsed, setCollapsed] = useState(false)
   const [sysOpen, setSysOpen] = useState(false)
