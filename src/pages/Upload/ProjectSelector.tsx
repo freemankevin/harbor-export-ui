@@ -29,13 +29,13 @@ export default function ProjectSelector({ selectedProject, onProjectChange, proj
       }}>
         <span style={{ color: 'red' }}>*</span> 项目
       </label>
-      <div style={{ position: 'relative', flex: 1 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <select
           value={selectedProject}
           onChange={handleChange}
           style={{
-            width: '100%',
-            padding: '8px 32px 8px 12px',
+            width: '200px',
+            padding: '8px 12px',
             border: `1px solid ${isError ? 'red' : '#ccc'}`,
             borderRadius: '4px',
             backgroundColor: isError ? '#fff5f5' : 'white',
@@ -54,14 +54,13 @@ export default function ProjectSelector({ selectedProject, onProjectChange, proj
             console.log('刷新项目列表')
           }}
           style={{
-            position: 'absolute',
-            right: '8px',
-            top: '50%',
-            transform: 'translateY(-50%)',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            padding: '4px'
+            padding: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
           title="刷新项目列表"
         >

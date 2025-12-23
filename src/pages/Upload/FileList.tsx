@@ -76,6 +76,17 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
           </svg>
           <div style={{ marginBottom: '8px', fontSize: '14px' }}>请将镜像拖至此处</div>
           <button
+            onClick={() => {
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.multiple = true;
+              input.accept = '.tar,.tar.gz';
+              input.onchange = (e) => {
+                const files = Array.from((e.target as HTMLInputElement).files || []);
+                onDropFiles(files);
+              };
+              input.click();
+            }}
             style={{
               padding: '8px 16px',
               backgroundColor: '#333',
@@ -93,23 +104,26 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
         <div>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '2fr 1fr 1fr 1fr',
+            gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
             gap: '12px',
-            padding: '0 12px 12px 12px',
+            padding: '12px',
             borderBottom: '1px solid #eee',
             fontSize: '14px',
-            fontWeight: '500',
-            color: '#666'
+            fontWeight: '600',
+            color: '#333',
+            backgroundColor: '#f8f9fa',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
           }}>
             <div>名称</div>
             <div>大小</div>
             <div>任务进度</div>
             <div>操作</div>
+            <div>状态</div>
           </div>
           {files.map((item, index) => (
             <div key={index} style={{
               display: 'grid',
-              gridTemplateColumns: '2fr 1fr 1fr 1fr',
+              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
               gap: '12px',
               padding: '12px',
               borderBottom: '1px solid #eee',
@@ -120,9 +134,9 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
                 {item.file.name}
               </div>
               <div>{formatFileSize(item.file.size)}</div>
-              <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{
-                  width: '100%',
+                  flex: 1,
                   height: '4px',
                   backgroundColor: '#e0e0e0',
                   borderRadius: '2px',
@@ -135,11 +149,24 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
                     transition: 'width 0.3s ease'
                   }} />
                 </div>
-                <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
+                <span style={{ fontSize: '12px', color: '#666', whiteSpace: 'nowrap' }}>
                   {item.progress}%
-                </div>
+                </span>
               </div>
-              <div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={() => console.log('上传单个文件', item.file.name)}
+                  disabled={item.status === 'uploading' || item.status === 'completed'}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: item.status === 'uploading' || item.status === 'completed' ? '#ccc' : '#007bff',
+                    cursor: item.status === 'uploading' || item.status === 'completed' ? 'not-allowed' : 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  上传
+                </button>
                 <button
                   onClick={() => onRemoveFile(index)}
                   style={{
@@ -152,6 +179,12 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
                 >
                   删除
                 </button>
+              </div>
+              <div style={{ fontSize: '12px', color: '#666' }}>
+                {item.status === 'pending' && '待上传'}
+                {item.status === 'uploading' && '上传中'}
+                {item.status === 'completed' && '已完成'}
+                {item.status === 'error' && '上传失败'}
               </div>
             </div>
           ))}
