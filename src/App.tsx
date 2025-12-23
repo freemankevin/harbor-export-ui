@@ -5,13 +5,15 @@ import Explorer from './pages/Explorer'
 import Monitor from './pages/Monitor'
 import SysLogs from './pages/SysLogs'
 import OpsLogs from './pages/OpsLogs'
+import Upload from './pages/Upload'
 
 function App() {
-  const [tab, setTab] = useState<'settings' | 'explorer' | 'monitor' | 'syslog' | 'oplog'>('settings')
+  const [tab, setTab] = useState<'settings' | 'explorer-download' | 'explorer-upload' | 'monitor' | 'syslog' | 'oplog'>('settings')
   const [theme, setTheme] = useState<'dark' | 'light'>((localStorage.getItem('theme') as 'dark' | 'light') || 'light')
   // const [apiVer, setApiVer] = useState<string>('') // 移除未使用的变量
   // const [collapsed, setCollapsed] = useState(false)
   const [sysOpen, setSysOpen] = useState(false)
+  const [explorerOpen, setExplorerOpen] = useState(true)
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -25,10 +27,7 @@ function App() {
   //   }).catch(() => { })
   // }, [])
 
-  const menuItems = [
-    { id: 'settings', label: '配置管理' },
-    { id: 'explorer', label: '镜像中心' }
-  ]
+
 
   return (
     <div className="layout">
@@ -47,15 +46,47 @@ function App() {
 
         {/* 菜单 */}
         <div className="menu">
-          {menuItems.map(item => (
-            <button
-              key={item.id}
-              className={tab === item.id ? 'active' : ''}
-              onClick={() => setTab(item.id as any)}
-            >
-              {item.label}
-            </button>
-          ))}
+          <button
+            className={tab === 'settings' ? 'active' : ''}
+            onClick={() => setTab('settings')}
+          >
+            配置管理
+          </button>
+
+          <button
+            className={`menu-group-header ${explorerOpen ? 'open' : 'closed'}`}
+            onClick={() => setExplorerOpen(!explorerOpen)}
+          >
+            <span>镜像中心</span>
+            <span className="chevron">
+              {explorerOpen ? (
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 3 L5 6 L8 3" />
+                </svg>
+              ) : (
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 2 L6 5 L3 8" />
+                </svg>
+              )}
+            </span>
+          </button>
+
+          {explorerOpen && (
+            <div className="menu-group-children">
+              <button
+                className={tab === 'explorer-download' ? 'active' : ''}
+                onClick={() => setTab('explorer-download')}
+              >
+                下载镜像
+              </button>
+              <button
+                className={tab === 'explorer-upload' ? 'active' : ''}
+                onClick={() => setTab('explorer-upload')}
+              >
+                上传镜像
+              </button>
+            </div>
+          )}
 
           <button
             className={`menu-group-header ${sysOpen ? 'open' : 'closed'}`}
@@ -122,7 +153,8 @@ function App() {
         
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'auto' }}>
           {tab === 'settings' && <Settings />}
-          {tab === 'explorer' && <Explorer />}
+          {tab === 'explorer-download' && <Explorer />}
+          {tab === 'explorer-upload' && <Upload />}
           {tab === 'monitor' && <Monitor />}
           {tab === 'syslog' && <SysLogs />}
           {tab === 'oplog' && <OpsLogs />}
