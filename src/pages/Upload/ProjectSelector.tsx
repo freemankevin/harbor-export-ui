@@ -4,9 +4,10 @@ interface ProjectSelectorProps {
   selectedProject: string
   onProjectChange: (project: string) => void
   projects: string[]
+  onRefresh?: () => void
 }
 
-export default function ProjectSelector({ selectedProject, onProjectChange, projects }: ProjectSelectorProps) {
+export default function ProjectSelector({ selectedProject, onProjectChange, projects, onRefresh }: ProjectSelectorProps) {
   const [isError, setIsError] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -35,12 +36,17 @@ export default function ProjectSelector({ selectedProject, onProjectChange, proj
           onChange={handleChange}
           style={{
             width: '200px',
-            padding: '8px 12px',
+            padding: '8px 32px 8px 12px',
             border: `1px solid ${isError ? 'red' : '#ccc'}`,
             borderRadius: '4px',
             backgroundColor: isError ? '#fff5f5' : 'white',
             fontSize: '14px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            appearance: 'none',
+            backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'right 8px center',
+            backgroundSize: '16px'
           }}
         >
           <option value="">--请选择--</option>
@@ -50,8 +56,9 @@ export default function ProjectSelector({ selectedProject, onProjectChange, proj
         </select>
         <button
           onClick={() => {
-            // 刷新项目列表逻辑
-            console.log('刷新项目列表')
+            if (onRefresh) {
+              onRefresh()
+            }
           }}
           style={{
             background: 'none',

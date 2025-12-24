@@ -38,6 +38,9 @@ export const HarborAPI = {
   },
   search(cfg: HarborConfig, query: string) {
     return post<{ results: { name: string; project_name: string }[] }>('/api/harbor/search', { ...cfg, query })
+  },
+  checkUploadPermission(cfg: HarborConfig, project: string) {
+    return post<{ has_permission: boolean; message: string; role_id?: number }>('/api/harbor/check-upload-permission', { ...cfg, project })
   }
 }
 

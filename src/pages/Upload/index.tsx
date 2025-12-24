@@ -1,84 +1,169 @@
-import { useState, useRef } from 'react'
+import { useRef, useState } from 'react'
+import { loadConfig } from '../../store/config'
+import { useFileManager } from './hooks/useFileManager'
+import { useProjectManager } from './hooks/useProjectManager'
+import { useFileUpload } from './hooks/useFileUpload'
+import type { UploadConfig } from './hooks/useFileUpload'
 
 import InfoBox from './InfoBox'
 import ProjectSelector from './ProjectSelector'
 import ActionButtons from './ActionButtons'
 import FileList from './FileList'
 
-interface FileItem {
-  file: File
-  progress: number
-  status: 'pending' | 'uploading' | 'completed' | 'error'
-}
-
-const MAX_UPLOAD_COUNT = 10
-
 export default function Upload() {
-  const [selectedProject, setSelectedProject] = useState('')
-  const [files, setFiles] = useState<FileItem[]>([])
-  const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [showHelp, setShowHelp] = useState(false)
+  const hideTimer = useRef<number | null>(null)
+  const TITLE_LEFT = 48
+  const TITLE_TOP = 46
 
-  // 模拟项目数据
-  const projects = ['项目A', '项目B', '项目C', '项目D']
-
-  const remainingCount = MAX_UPLOAD_COUNT - files.length
+  const { selectedProject, setSelectedProject, projects, loadProjects } = useProjectManager()
+  const { files, addFiles, removeFile, clearAll, updateFileStatus, updateFileProgress } = useFileManager()
+  const { isUploading, setIsUploading, uploadSingleFile } = useFileUpload()
 
   const handleSelectFiles = () => {
     fileInputRef.current?.click()
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFiles = Array.from(e.target.files || [])
-    const availableSlots = MAX_UPLOAD_COUNT - files.length
-    const filesToAdd = newFiles.slice(0, availableSlots)
-    
-    const fileItems = filesToAdd.map(file => ({
-      file,
-      progress: 0,
-      status: 'pending' as const
-    }))
-    setFiles(prev => [...prev, ...fileItems])
+    const selectedFiles = Array.from(e.target.files || [])
+    if (selectedFiles.length > 0) {
+      addFiles(selectedFiles)
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
-  const handleDropFiles = (newFiles: File[]) => {
-    const availableSlots = MAX_UPLOAD_COUNT - files.length
-    const filesToAdd = newFiles.slice(0, availableSlots)
-    
-    const fileItems = filesToAdd.map(file => ({
-      file,
-      progress: 0,
-      status: 'pending' as const
-    }))
-    setFiles(prev => [...prev, ...fileItems])
+  const handleDropFiles = (droppedFiles: File[]) => {
+    addFiles(droppedFiles)
   }
 
-  const handleRemoveFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index))
+  const handleClearAll = () => {
+    clearAll()
+  }
+
+  const checkPermission = async (config: UploadConfig): Promise<boolean> => {
+    try {
+      const permissionRes = await fetch('/api/harbor/check-upload-permission', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          harborUrl: config.harborUrl,
+          username: config.username,
+          password: config.password,
+          project: config.project
+        })
+      })
+
+      const permissionData = await permissionRes.json()
+
+      if (!permissionData.success) {
+        alert(permissionData.message || '您没有权限上传镜像到此项目')
+        return false
+      }
+      return true
+    } catch (error) {
+      console.error('权限校验失败:', error)
+      alert('权限校验失败，请稍后重试')
+      return false
+    }
+  }
+
+  const handleUploadSingle = async (index: number) => {
+    if (!selectedProject) {
+      alert('请先选择项目')
+      return
+    }
+
+    const cfg = loadConfig()
+    if (!cfg) {
+      alert('请先在设置页面配置 Harbor 连接信息')
+      return
+    }
+
+    const currentFile = files[index]
+    if (!currentFile) {
+      alert('文件不存在')
+      return
+    }
+
+    const config: UploadConfig = {
+      harborUrl: cfg.harborUrl,
+      username: cfg.username,
+      password: cfg.password,
+      project: selectedProject
+    }
+
+    const hasPermission = await checkPermission(config)
+    if (!hasPermission) return
+
+    updateFileStatus(index, 'uploading', 0)
+
+    try {
+      await uploadSingleFile(
+        currentFile,
+        config,
+        (progress) => updateFileProgress(index, progress),
+        (status, errorMessage) => updateFileStatus(index, status, status === 'completed' ? 100 : undefined, errorMessage)
+      )
+    } catch (error: any) {
+      console.error(`❌ 上传文件异常: ${currentFile.file.name}`, error)
+    }
   }
 
   const handleStartUpload = async () => {
     if (!selectedProject || files.length === 0) return
 
-    setIsUploading(true)
-    
-    // 模拟上传过程
-    for (let i = 0; i < files.length; i++) {
-      setFiles(prev => prev.map((item, index) => 
-        index === i ? { ...item, status: 'uploading' } : item
-      ))
+    const cfg = loadConfig()
+    if (!cfg) {
+      alert('请先在设置页面配置 Harbor 连接信息')
+      return
+    }
 
-      // 模拟上传进度
-      for (let progress = 0; progress <= 100; progress += 10) {
-        await new Promise(resolve => setTimeout(resolve, 200))
-        setFiles(prev => prev.map((item, index) => 
-          index === i ? { ...item, progress } : item
-        ))
+    const config: UploadConfig = {
+      harborUrl: cfg.harborUrl,
+      username: cfg.username,
+      password: cfg.password,
+      project: selectedProject
+    }
+
+    const hasPermission = await checkPermission(config)
+    if (!hasPermission) return
+
+    setIsUploading(true)
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i]
+
+      if (currentFile.status === 'completed') {
+        console.log(`跳过已完成的文件: ${currentFile.file.name}`)
+        continue
       }
 
-      setFiles(prev => prev.map((item, index) => 
-        index === i ? { ...item, status: 'completed' } : item
-      ))
+      if (currentFile.status === 'uploading') {
+        console.log(`跳过正在上传的文件: ${currentFile.file.name}`)
+        continue
+      }
+
+      if (currentFile.file.size === 0 || (currentFile.file instanceof File && currentFile.file.size > 0 && currentFile.file.lastModified === 0)) { 
+        console.log(`跳过占位文件（从持久化恢复）: ${currentFile.file.name}`)
+        updateFileStatus(i, 'error', undefined, '文件已丢失，请重新添加')
+        continue
+      }
+
+      updateFileStatus(i, 'uploading', 0)
+
+      try {
+        await uploadSingleFile(
+          currentFile,
+          config,
+          (progress) => updateFileProgress(i, progress),
+          (status, errorMessage) => updateFileStatus(i, status, status === 'completed' ? 100 : undefined, errorMessage)
+        )
+      } catch (error: any) {
+        console.error(`❌ 上传文件异常: ${currentFile.file.name}`, error)
+      }
     }
 
     setIsUploading(false)
@@ -86,83 +171,57 @@ export default function Upload() {
 
   const handleCancelUpload = () => {
     setIsUploading(false)
-    // 重置所有文件状态
-    setFiles(prev => prev.map(item => ({
-      ...item,
-      progress: 0,
-      status: 'pending' as const
-    })))
+    files.forEach((item, index) => {
+      if (item.status === 'uploading' && item.progress < 100) {
+        updateFileStatus(index, 'pending', 0)
+      }
+    })
   }
 
   return (
-    <div style={{
-      padding: '0 24px',
-      height: '100%',
-      overflow: 'auto'
-    }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        margin: '20px 0 16px 0'
-      }}>
-        <h2 style={{
-          fontSize: '18px',
-          fontWeight: '600',
-          color: 'var(--text-primary)',
-          margin: 0
-        }}>
-          上传镜像
-        </h2>
-        <div style={{
-          position: 'relative',
-          display: 'inline-block'
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ cursor: 'help', color: 'var(--text-secondary)' }}>
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
+    <div style={{ position: 'relative' }}>
+      <div style={{ position: 'absolute', left: TITLE_LEFT, top: TITLE_TOP, zIndex: 3, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h2 style={{ fontSize: 28, fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>上传镜像</h2>
+        <div
+          onMouseEnter={() => { if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null } setShowHelp(true) }}
+          onMouseLeave={() => { hideTimer.current = window.setTimeout(() => setShowHelp(false), 150) }}
+          style={{ position: 'relative', marginTop: 3, width: 18, height: 18, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', background: 'transparent' }}
+          aria-label="帮助"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ display: 'block' }}>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.5 9.5a2.5 2.5 0 1 1 4.9.8c0 1.7-2.4 1.7-2.4 3.2" />
+            <circle cx="12" cy="16.5" r="0.75" />
           </svg>
-          <div style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            backgroundColor: 'var(--surface)',
-            color: 'var(--text-primary)',
-            padding: '6px 10px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            whiteSpace: 'nowrap',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            border: '1px solid var(--border)',
-            opacity: 0,
-            visibility: 'hidden',
-            transition: 'opacity 0.2s',
-            zIndex: 1000,
-            marginBottom: '4px',
-            pointerEvents: 'none'
-          }}>
-            上传镜像到指定项目
-          </div>
+          {showHelp && (
+            <div
+              onMouseEnter={() => { if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null } }}
+              onMouseLeave={() => { hideTimer.current = window.setTimeout(() => setShowHelp(false), 150) }}
+              style={{ position: 'absolute', top: '50%', left: 32, transform: 'translateY(-50%)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '10px 14px', boxShadow: '0 8px 20px rgba(0,0,0,0.08)', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'nowrap', zIndex: 4 }}
+            >
+              <span style={{ fontSize: 12 }}>上传镜像到指定 Harbor 项目</span>
+              <div style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)', width: 10, height: 10, background: 'var(--surface)', borderLeft: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}></div>
+            </div>
+          )}
         </div>
       </div>
+
       <div style={{
+        margin: '100px 24px 24px 24px',
+        borderRadius: '16px',
         backgroundColor: 'var(--surface)',
         border: '1px solid var(--border)',
-        borderRadius: '8px',
         padding: '20px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        maxWidth: '600px',
-        margin: '0 auto'
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
       }}>
-        <InfoBox remainingCount={remainingCount} />
+        <InfoBox remainingCount={10 - files.length} />
         
         <div style={{ marginBottom: '24px' }}>
           <ProjectSelector
             selectedProject={selectedProject}
             onProjectChange={setSelectedProject}
             projects={projects}
+            onRefresh={loadProjects}
           />
           
           <ActionButtons
@@ -172,13 +231,15 @@ export default function Upload() {
             onSelectFiles={handleSelectFiles}
             onStartUpload={handleStartUpload}
             onCancelUpload={handleCancelUpload}
+            onClearAll={handleClearAll}
           />
         </div>
 
         <FileList
           files={files}
-          onRemoveFile={handleRemoveFile}
+          onRemoveFile={removeFile}
           onDropFiles={handleDropFiles}
+          onUploadSingle={handleUploadSingle}
         />
 
         <input

@@ -4,21 +4,37 @@ interface FileItem {
   file: File
   progress: number
   status: 'pending' | 'uploading' | 'completed' | 'error'
-}
-
-interface FileItem {
-  file: File
-  progress: number
-  status: 'pending' | 'uploading' | 'completed' | 'error'
+  errorMessage?: string
 }
 
 interface FileListProps {
   files: FileItem[]
   onRemoveFile: (index: number) => void
   onDropFiles: (files: File[]) => void
+  onUploadSingle?: (index: number) => void
 }
 
-export default function FileList({ files, onRemoveFile, onDropFiles }: FileListProps) {
+export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSingle }: FileListProps) {
+  
+  const getStatusColor = (status: FileItem['status']) => {
+    switch (status) {
+      case 'pending': return '#666'
+      case 'uploading': return '#007bff'
+      case 'completed': return '#28a745'
+      case 'error': return '#dc3545'
+      default: return '#666'
+    }
+  }
+  
+  const getStatusText = (status: FileItem['status']) => {
+    switch (status) {
+      case 'pending': return '待上传'
+      case 'uploading': return '上传中'
+      case 'completed': return '已完成'
+      case 'error': return '上传失败'
+      default: return '未知'
+    }
+  }
   const [isDragging, setIsDragging] = useState(false)
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -50,11 +66,11 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
   return (
     <div
       style={{
-        border: `2px dashed ${isDragging ? '#007bff' : '#ccc'}`,
+        border: `2px dashed ${isDragging ? '#007bff' : 'var(--border)'}`,
         borderRadius: '8px',
         padding: '20px',
         minHeight: '200px',
-        backgroundColor: isDragging ? '#f8f9fa' : 'transparent'
+        backgroundColor: isDragging ? 'var(--hover-bg)' : 'transparent'
       }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -67,7 +83,7 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
           alignItems: 'center',
           justifyContent: 'center',
           height: '160px',
-          color: '#666'
+          color: 'var(--text-secondary)'
         }}>
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" style={{ marginBottom: '12px', opacity: 0.5 }}>
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -89,9 +105,9 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
             }}
             style={{
               padding: '8px 16px',
-              backgroundColor: '#333',
-              color: 'white',
-              border: 'none',
+              backgroundColor: 'var(--button-bg)',
+              color: 'var(--button-text)',
+              border: '1px solid var(--border)',
               borderRadius: '4px',
               cursor: 'pointer',
               fontSize: '14px'
@@ -107,11 +123,11 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
             gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
             gap: '12px',
             padding: '12px',
-            borderBottom: '1px solid #eee',
+            borderBottom: '1px solid var(--border)',
             fontSize: '14px',
             fontWeight: '600',
-            color: '#333',
-            backgroundColor: '#f8f9fa',
+            color: 'var(--text-primary)',
+            backgroundColor: 'var(--hover-bg)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
           }}>
             <div>名称</div>
@@ -126,9 +142,10 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
               gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
               gap: '12px',
               padding: '12px',
-              borderBottom: '1px solid #eee',
+              borderBottom: '1px solid var(--border)',
               alignItems: 'center',
-              fontSize: '14px'
+              fontSize: '14px',
+              color: 'var(--text-primary)'
             }}>
               <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.file.name}
@@ -138,7 +155,7 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
                 <div style={{
                   flex: 1,
                   height: '4px',
-                  backgroundColor: '#e0e0e0',
+                  backgroundColor: 'var(--border)',
                   borderRadius: '2px',
                   overflow: 'hidden'
                 }}>
@@ -149,42 +166,56 @@ export default function FileList({ files, onRemoveFile, onDropFiles }: FileListP
                     transition: 'width 0.3s ease'
                   }} />
                 </div>
-                <span style={{ fontSize: '12px', color: '#666', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
                   {item.progress}%
                 </span>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  onClick={() => console.log('上传单个文件', item.file.name)}
-                  disabled={item.status === 'uploading' || item.status === 'completed'}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: item.status === 'uploading' || item.status === 'completed' ? '#ccc' : '#007bff',
-                    cursor: item.status === 'uploading' || item.status === 'completed' ? 'not-allowed' : 'pointer',
-                    fontSize: '14px'
-                  }}
-                >
-                  上传
-                </button>
+                {onUploadSingle && (
+                  <button
+                    onClick={() => onUploadSingle(index)}
+                    disabled={item.status === 'uploading' || item.status === 'completed'}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: item.status === 'uploading' || item.status === 'completed' ? '#ccc' : '#007bff',
+                      cursor: item.status === 'uploading' || item.status === 'completed' ? 'not-allowed' : 'pointer',
+                      fontSize: '14px',
+                      padding: '4px 8px'
+                    }}
+                    title={item.status === 'completed' ? '已完成' : item.status === 'uploading' ? '上传中' : '上传此文件'}
+                  >
+                    上传
+                  </button>
+                )}
                 <button
                   onClick={() => onRemoveFile(index)}
+                  disabled={item.status === 'uploading'}
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#ff4444',
-                    cursor: 'pointer',
-                    fontSize: '14px'
+                    color: item.status === 'uploading' ? '#ccc' : '#ff4444',
+                    cursor: item.status === 'uploading' ? 'not-allowed' : 'pointer',
+                    fontSize: '14px',
+                    padding: '4px 8px'
                   }}
+                  title={item.status === 'uploading' ? '上传中无法删除' : '删除此文件'}
                 >
                   删除
                 </button>
               </div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
-                {item.status === 'pending' && '待上传'}
-                {item.status === 'uploading' && '上传中'}
-                {item.status === 'completed' && '已完成'}
-                {item.status === 'error' && '上传失败'}
+              <div style={{ 
+                fontSize: '12px', 
+                color: getStatusColor(item.status),
+                fontWeight: item.status === 'error' || item.status === 'completed' ? '600' : '400'
+              }}>
+                {item.status === 'error' ? (
+                  <span title={item.errorMessage || '上传失败'}>
+                    {getStatusText(item.status)}
+                  </span>
+                ) : (
+                  getStatusText(item.status)
+                )}
               </div>
             </div>
           ))}
