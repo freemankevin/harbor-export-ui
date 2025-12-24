@@ -120,7 +120,7 @@ export default function Upload() {
     }, true)
 
     try {
-      const result = await uploadSingleFile(
+      await uploadSingleFile(
         currentFile,
         config,
         (progress) => updateFileProgress(index, progress),
