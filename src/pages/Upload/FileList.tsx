@@ -26,10 +26,10 @@ export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSin
     }
   }
   
-  const getStatusText = (status: FileItem['status']) => {
+  const getStatusText = (status: FileItem['status'], progress: number) => {
     switch (status) {
       case 'pending': return '待上传'
-      case 'uploading': return '上传中'
+      case 'uploading': return progress >= 100 ? '处理中' : '上传中'
       case 'completed': return '已完成'
       case 'error': return '上传失败'
       default: return '未知'
@@ -245,10 +245,10 @@ export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSin
               }}>
                 {item.status === 'error' ? (
                   <span title={item.errorMessage || '上传失败'}>
-                    {getStatusText(item.status)}
+                    {getStatusText(item.status, item.progress)}
                   </span>
                 ) : (
-                  getStatusText(item.status)
+                  getStatusText(item.status, item.progress)
                 )}
               </div>
             </div>

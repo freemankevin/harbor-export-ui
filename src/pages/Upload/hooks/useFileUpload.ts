@@ -86,6 +86,11 @@ export const useFileUpload = () => {
         }
       })
 
+      xhr.upload.addEventListener('loadend', () => {
+        onProgress(100)
+        console.log(`📦 文件上传完成，后端正在处理镜像: ${file.file.name}`)
+      })
+
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
           try {
