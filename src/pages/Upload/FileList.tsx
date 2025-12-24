@@ -18,11 +18,11 @@ export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSin
   
   const getStatusColor = (status: FileItem['status']) => {
     switch (status) {
-      case 'pending': return '#666'
-      case 'uploading': return '#007bff'
-      case 'completed': return '#28a745'
-      case 'error': return '#dc3545'
-      default: return '#666'
+      case 'pending': return 'var(--text-muted)'
+      case 'uploading': return 'var(--primary)'
+      case 'completed': return 'var(--success)'
+      case 'error': return 'var(--error)'
+      default: return 'var(--text-muted)'
     }
   }
   
@@ -66,7 +66,7 @@ export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSin
   return (
     <div
       style={{
-        border: `2px dashed ${isDragging ? '#007bff' : 'var(--border)'}`,
+        border: `2px dashed ${isDragging ? 'var(--primary)' : 'var(--border)'}`,
         borderRadius: '8px',
         padding: '20px',
         minHeight: '200px',
@@ -105,12 +105,22 @@ export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSin
             }}
             style={{
               padding: '8px 16px',
-              backgroundColor: 'var(--button-bg)',
-              color: 'var(--button-text)',
-              border: '1px solid var(--border)',
+              backgroundColor: 'var(--primary)',
+              color: 'white',
+              border: 'none',
               borderRadius: '4px',
               cursor: 'pointer',
-              fontSize: '14px'
+              fontSize: '14px',
+              transition: 'all 0.2s',
+              boxShadow: '0 2px 4px rgba(59, 130, 246, 0.2)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--primary-hover)'
+              e.currentTarget.style.boxShadow = '0 4px 8px rgba(59, 130, 246, 0.3)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--primary)'
+              e.currentTarget.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.2)'
             }}
           >
             选择镜像文件
@@ -120,28 +130,29 @@ export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSin
         <div>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
-            gap: '12px',
-            padding: '12px',
+            gridTemplateColumns: '2fr 1fr 1.2fr 1fr 0.8fr',
+            gap: '16px',
+            padding: '12px 16px',
             borderBottom: '1px solid var(--border)',
             fontSize: '14px',
             fontWeight: '600',
             color: 'var(--text-primary)',
-            backgroundColor: 'var(--hover-bg)',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+            backgroundColor: 'var(--bg-tertiary)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            borderRadius: '8px 8px 0 0'
           }}>
             <div>名称</div>
             <div>大小</div>
             <div>任务进度</div>
-            <div>操作</div>
-            <div>状态</div>
+            <div style={{ paddingLeft: '8px' }}>操作</div>
+            <div style={{ paddingLeft: '8px' }}>状态</div>
           </div>
           {files.map((item, index) => (
             <div key={index} style={{
               display: 'grid',
-              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
-              gap: '12px',
-              padding: '12px',
+              gridTemplateColumns: '2fr 1fr 1.2fr 1fr 0.8fr',
+              gap: '16px',
+              padding: '12px 16px',
               borderBottom: '1px solid var(--border)',
               alignItems: 'center',
               fontSize: '14px',
@@ -162,7 +173,7 @@ export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSin
                   <div style={{
                     width: `${item.progress}%`,
                     height: '100%',
-                    backgroundColor: item.status === 'error' ? '#ff4444' : '#007bff',
+                    backgroundColor: item.status === 'error' ? 'var(--error)' : 'var(--primary)',
                     transition: 'width 0.3s ease'
                   }} />
                 </div>
@@ -170,7 +181,7 @@ export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSin
                   {item.progress}%
                 </span>
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px', paddingLeft: '8px' }}>
                 {onUploadSingle && (
                   <button
                     onClick={() => onUploadSingle(index)}
@@ -178,12 +189,23 @@ export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSin
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: item.status === 'uploading' || item.status === 'completed' ? '#ccc' : '#007bff',
+                      color: item.status === 'uploading' || item.status === 'completed' ? 'var(--text-disabled)' : 'var(--primary)',
                       cursor: item.status === 'uploading' || item.status === 'completed' ? 'not-allowed' : 'pointer',
                       fontSize: '14px',
-                      padding: '4px 8px'
+                      padding: '4px 8px',
+                      transition: 'color 0.2s'
                     }}
                     title={item.status === 'completed' ? '已完成' : item.status === 'uploading' ? '上传中' : '上传此文件'}
+                    onMouseEnter={(e) => {
+                      if (item.status !== 'uploading' && item.status !== 'completed') {
+                        e.currentTarget.style.color = 'var(--primary-hover)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (item.status !== 'uploading' && item.status !== 'completed') {
+                        e.currentTarget.style.color = 'var(--primary)'
+                      }
+                    }}
                   >
                     上传
                   </button>
@@ -194,12 +216,23 @@ export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSin
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: item.status === 'uploading' ? '#ccc' : '#ff4444',
+                    color: item.status === 'uploading' ? 'var(--text-disabled)' : 'var(--error)',
                     cursor: item.status === 'uploading' ? 'not-allowed' : 'pointer',
                     fontSize: '14px',
-                    padding: '4px 8px'
+                    padding: '4px 8px',
+                    transition: 'color 0.2s'
                   }}
                   title={item.status === 'uploading' ? '上传中无法删除' : '删除此文件'}
+                  onMouseEnter={(e) => {
+                    if (item.status !== 'uploading') {
+                      e.currentTarget.style.color = 'var(--error-light)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (item.status !== 'uploading') {
+                      e.currentTarget.style.color = 'var(--error)'
+                    }
+                  }}
                 >
                   删除
                 </button>
@@ -207,7 +240,8 @@ export default function FileList({ files, onRemoveFile, onDropFiles, onUploadSin
               <div style={{ 
                 fontSize: '12px', 
                 color: getStatusColor(item.status),
-                fontWeight: item.status === 'error' || item.status === 'completed' ? '600' : '400'
+                fontWeight: item.status === 'error' || item.status === 'completed' ? '600' : '400',
+                paddingLeft: '8px'
               }}>
                 {item.status === 'error' ? (
                   <span title={item.errorMessage || '上传失败'}>

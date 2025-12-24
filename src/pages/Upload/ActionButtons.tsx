@@ -37,7 +37,7 @@ export default function ActionButtons({
         onClick={onSelectFiles}
         style={{
           padding: '10px 20px',
-          backgroundColor: '#1890ff',
+          backgroundColor: 'var(--primary)',
           color: 'white',
           border: 'none',
           borderRadius: '6px',
@@ -45,15 +45,15 @@ export default function ActionButtons({
           fontSize: '14px',
           fontWeight: '500',
           transition: 'all 0.2s',
-          boxShadow: '0 2px 4px rgba(24,144,255,0.2)'
+          boxShadow: '0 2px 4px rgba(59, 130, 246, 0.2)'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#40a9ff'
-          e.currentTarget.style.boxShadow = '0 4px 8px rgba(24,144,255,0.3)'
+          e.currentTarget.style.backgroundColor = 'var(--primary-hover)'
+          e.currentTarget.style.boxShadow = '0 4px 8px rgba(59, 130, 246, 0.3)'
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#1890ff'
-          e.currentTarget.style.boxShadow = '0 2px 4px rgba(24,144,255,0.2)'
+          e.currentTarget.style.backgroundColor = 'var(--primary)'
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.2)'
         }}
       >
         选择镜像文件
@@ -63,7 +63,7 @@ export default function ActionButtons({
         disabled={!canStartUpload}
         style={{
           padding: '10px 20px',
-          backgroundColor: canStartUpload ? '#52c41a' : '#d9d9d9',
+          backgroundColor: canStartUpload ? 'var(--success)' : 'var(--text-disabled)',
           color: 'white',
           border: 'none',
           borderRadius: '6px',
@@ -71,18 +71,19 @@ export default function ActionButtons({
           fontSize: '14px',
           fontWeight: '500',
           transition: 'all 0.2s',
-          boxShadow: canStartUpload ? '0 2px 4px rgba(82,196,26,0.2)' : 'none'
+          boxShadow: canStartUpload ? '0 2px 4px rgba(16, 185, 129, 0.2)' : 'none',
+          opacity: canStartUpload ? 1 : 0.6
         }}
         onMouseEnter={(e) => {
           if (canStartUpload) {
-            e.currentTarget.style.backgroundColor = '#73d13d'
-            e.currentTarget.style.boxShadow = '0 4px 8px rgba(82,196,26,0.3)'
+            e.currentTarget.style.backgroundColor = 'var(--success-light)'
+            e.currentTarget.style.boxShadow = '0 4px 8px rgba(16, 185, 129, 0.3)'
           }
         }}
         onMouseLeave={(e) => {
           if (canStartUpload) {
-            e.currentTarget.style.backgroundColor = '#52c41a'
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(82,196,26,0.2)'
+            e.currentTarget.style.backgroundColor = 'var(--success)'
+            e.currentTarget.style.boxShadow = '0 2px 4px rgba(16, 185, 129, 0.2)'
           }
         }}
       >
@@ -93,7 +94,7 @@ export default function ActionButtons({
         disabled={!isUploading}
         style={{
           padding: '10px 20px',
-          backgroundColor: isUploading ? '#faad14' : '#d9d9d9',
+          backgroundColor: isUploading ? 'var(--warning)' : 'var(--text-disabled)',
           color: 'white',
           border: 'none',
           borderRadius: '6px',
@@ -101,18 +102,19 @@ export default function ActionButtons({
           fontSize: '14px',
           fontWeight: '500',
           transition: 'all 0.2s',
-          boxShadow: isUploading ? '0 2px 4px rgba(250,173,20,0.2)' : 'none'
+          boxShadow: isUploading ? '0 2px 4px rgba(245, 158, 11, 0.2)' : 'none',
+          opacity: isUploading ? 1 : 0.6
         }}
         onMouseEnter={(e) => {
           if (isUploading) {
-            e.currentTarget.style.backgroundColor = '#ffc53d'
-            e.currentTarget.style.boxShadow = '0 4px 8px rgba(250,173,20,0.3)'
+            e.currentTarget.style.backgroundColor = '#fbbf24'
+            e.currentTarget.style.boxShadow = '0 4px 8px rgba(245, 158, 11, 0.3)'
           }
         }}
         onMouseLeave={(e) => {
           if (isUploading) {
-            e.currentTarget.style.backgroundColor = '#faad14'
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(250,173,20,0.2)'
+            e.currentTarget.style.backgroundColor = 'var(--warning)'
+            e.currentTarget.style.boxShadow = '0 2px 4px rgba(245, 158, 11, 0.2)'
           }
         }}
       >
@@ -123,7 +125,7 @@ export default function ActionButtons({
         disabled={!canClearAll}
         style={{
           padding: '10px 20px',
-          backgroundColor: canClearAll ? '#ff4d4f' : '#d9d9d9',
+          backgroundColor: canClearAll ? 'var(--error)' : 'var(--text-disabled)',
           color: 'white',
           border: 'none',
           borderRadius: '6px',
@@ -131,18 +133,19 @@ export default function ActionButtons({
           fontSize: '14px',
           fontWeight: '500',
           transition: 'all 0.2s',
-          boxShadow: canClearAll ? '0 2px 4px rgba(255,77,79,0.2)' : 'none'
+          boxShadow: canClearAll ? '0 2px 4px rgba(239, 68, 68, 0.2)' : 'none',
+          opacity: canClearAll ? 1 : 0.6
         }}
         onMouseEnter={(e) => {
            if (canClearAll) {
-             e.currentTarget.style.backgroundColor = '#ff7875'
-             e.currentTarget.style.boxShadow = '0 4px 8px rgba(255,77,79,0.3)'
+             e.currentTarget.style.backgroundColor = 'var(--error-light)'
+             e.currentTarget.style.boxShadow = '0 4px 8px rgba(239, 68, 68, 0.3)'
            }
          }}
         onMouseLeave={(e) => {
           if (canClearAll) {
-            e.currentTarget.style.backgroundColor = '#ff4d4f'
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(255,77,79,0.2)'
+            e.currentTarget.style.backgroundColor = 'var(--error)'
+            e.currentTarget.style.boxShadow = '0 2px 4px rgba(239, 68, 68, 0.2)'
           }
         }}
         title="清空所有文件记录"

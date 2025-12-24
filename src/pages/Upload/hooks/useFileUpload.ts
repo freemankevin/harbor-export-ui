@@ -14,6 +14,52 @@ export interface UploadConfig {
   project: string
 }
 
+const formatErrorMessage = (technicalError: string): string => {
+  const errorLower = technicalError.toLowerCase()
+  
+  if (errorLower.includes('corrupted') || errorLower.includes('invalid deflate') || errorLower.includes('invalid block type')) {
+    return '镜像文件已损坏或格式不正确，请检查文件完整性'
+  }
+  
+  if (errorLower.includes('unpigz') || errorLower.includes('gunzip')) {
+    return '镜像文件解压失败，可能文件已损坏'
+  }
+  
+  if (errorLower.includes('unauthorized') || errorLower.includes('401')) {
+    return '认证失败，请检查 Harbor 用户名和密码'
+  }
+  
+  if (errorLower.includes('forbidden') || errorLower.includes('403')) {
+    return '权限不足，您没有上传镜像到此项目的权限'
+  }
+  
+  if (errorLower.includes('not found') || errorLower.includes('404')) {
+    return '项目不存在或 Harbor 地址配置错误'
+  }
+  
+  if (errorLower.includes('timeout') || errorLower.includes('timed out')) {
+    return '上传超时，请检查网络连接或稍后重试'
+  }
+  
+  if (errorLower.includes('network') || errorLower.includes('connection')) {
+    return '网络连接失败，请检查网络设置'
+  }
+  
+  if (errorLower.includes('disk') || errorLower.includes('space')) {
+    return '磁盘空间不足，请清理服务器磁盘空间'
+  }
+  
+  if (errorLower.includes('manifest') || errorLower.includes('invalid image')) {
+    return '镜像格式不正确，请确保文件是有效的 Docker 镜像'
+  }
+  
+  if (technicalError.length > 100) {
+    return '上传失败，请联系管理员查看详细日志'
+  }
+  
+  return technicalError
+}
+
 export const useFileUpload = () => {
   const [isUploading, setIsUploading] = useState(false)
 
@@ -50,11 +96,12 @@ export const useFileUpload = () => {
               console.log(`✅ 文件上传成功: ${file.file.name}`)
               resolve()
             } else {
-              const errorMsg = response.message || response.details || '上传失败'
-              onStatusChange('error', errorMsg)
-              console.error(`❌ 文件上传失败: ${file.file.name}`, errorMsg)
-              alert(`镜像上传失败\n\n文件: ${file.file.name}\n错误: ${errorMsg}`)
-              reject(new Error(errorMsg))
+              const technicalError = response.message || response.details || '上传失败'
+              const userFriendlyError = formatErrorMessage(technicalError)
+              onStatusChange('error', userFriendlyError)
+              console.error(`❌ 文件上传失败: ${file.file.name}`, technicalError)
+              alert(`镜像上传失败\n\n文件: ${file.file.name}\n错误: ${userFriendlyError}`)
+              reject(new Error(userFriendlyError))
             }
           } catch (parseError) {
             const errorMsg = '服务器响应格式错误'
@@ -64,17 +111,18 @@ export const useFileUpload = () => {
             reject(new Error(errorMsg))
           }
         } else {
-          let errorMsg = `HTTP ${xhr.status}`
+          let technicalError = `HTTP ${xhr.status}`
           try {
             const response = JSON.parse(xhr.responseText)
-            errorMsg = response.message || response.details || errorMsg
+            technicalError = response.message || response.details || technicalError
           } catch (e) {
-            errorMsg = xhr.responseText || errorMsg
+            technicalError = xhr.responseText || technicalError
           }
-          onStatusChange('error', errorMsg)
-          console.error(`❌ 文件上传失败: ${file.file.name}`, errorMsg)
-          alert(`镜像上传失败\n\n文件: ${file.file.name}\n错误: ${errorMsg}`)
-          reject(new Error(errorMsg))
+          const userFriendlyError = formatErrorMessage(technicalError)
+          onStatusChange('error', userFriendlyError)
+          console.error(`❌ 文件上传失败: ${file.file.name}`, technicalError)
+          alert(`镜像上传失败\n\n文件: ${file.file.name}\n错误: ${userFriendlyError}`)
+          reject(new Error(userFriendlyError))
         }
       })
 
