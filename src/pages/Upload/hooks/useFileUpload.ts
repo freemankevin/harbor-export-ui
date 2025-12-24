@@ -17,6 +17,10 @@ export interface UploadConfig {
 const formatErrorMessage = (technicalError: string): string => {
   const errorLower = technicalError.toLowerCase()
   
+  if (errorLower.includes('already exists') || errorLower.includes('blob already exists')) {
+    return '镜像已存在于 Harbor'
+  }
+  
   if (errorLower.includes('corrupted') || errorLower.includes('invalid deflate') || errorLower.includes('invalid block type')) {
     return '镜像文件已损坏或格式不正确，请检查文件完整性'
   }
@@ -83,6 +87,9 @@ export const useFileUpload = () => {
         if (e.lengthComputable) {
           const percentComplete = Math.round((e.loaded / e.total) * 100)
           onProgress(percentComplete)
+          if (percentComplete % 20 === 0 && percentComplete > 0 && percentComplete < 100) {
+            console.log(`📊 上传进度: ${file.file.name} - ${percentComplete}%`)
+          }
         }
       })
 
@@ -96,22 +103,35 @@ export const useFileUpload = () => {
           try {
             const response = JSON.parse(xhr.responseText)
             if (response.success) {
+              const hasAlreadyExists = response.data?.uploaded_images?.some((img: any) => img.already_exists)
+              
               onStatusChange('completed')
               onProgress(100)
-              console.log(`✅ 文件上传成功: ${file.file.name}`)
+              
+              if (hasAlreadyExists) {
+                console.log(`✅ 文件上传成功（镜像已存在）: ${file.file.name}`)
+                console.log(`📝 镜像已存在于 Harbor，所有层均已跳过`)
+              } else {
+                console.log(`✅ 文件上传成功: ${file.file.name}`)
+                console.log(`📝 上传详情: 文件大小 ${(file.file.size / 1024 / 1024).toFixed(2)}MB`)
+              }
               resolve()
             } else {
               const technicalError = response.message || response.details || '上传失败'
               const userFriendlyError = formatErrorMessage(technicalError)
               onStatusChange('error', userFriendlyError)
-              console.error(`❌ 文件上传失败: ${file.file.name}`, technicalError)
+              console.error(`❌ 文件上传失败: ${file.file.name}`)
+              console.error(`📝 错误详情: ${technicalError}`)
+              console.error(`📝 用户提示: ${userFriendlyError}`)
               alert(`镜像上传失败\n\n文件: ${file.file.name}\n错误: ${userFriendlyError}`)
               reject(new Error(userFriendlyError))
             }
           } catch (parseError) {
             const errorMsg = '服务器响应格式错误'
             onStatusChange('error', errorMsg)
-            console.error(`❌ 解析响应失败: ${file.file.name}`, parseError)
+            console.error(`❌ 解析响应失败: ${file.file.name}`)
+            console.error(`📝 解析错误:`, parseError)
+            console.error(`📝 原始响应:`, xhr.responseText)
             alert(`镜像上传失败\n\n文件: ${file.file.name}\n错误: ${errorMsg}`)
             reject(new Error(errorMsg))
           }
@@ -125,7 +145,10 @@ export const useFileUpload = () => {
           }
           const userFriendlyError = formatErrorMessage(technicalError)
           onStatusChange('error', userFriendlyError)
-          console.error(`❌ 文件上传失败: ${file.file.name}`, technicalError)
+          console.error(`❌ 文件上传失败: ${file.file.name}`)
+          console.error(`📝 HTTP 状态码: ${xhr.status}`)
+          console.error(`📝 错误详情: ${technicalError}`)
+          console.error(`📝 用户提示: ${userFriendlyError}`)
           alert(`镜像上传失败\n\n文件: ${file.file.name}\n错误: ${userFriendlyError}`)
           reject(new Error(userFriendlyError))
         }
@@ -135,6 +158,7 @@ export const useFileUpload = () => {
         const errorMsg = '网络错误，上传失败'
         onStatusChange('error', errorMsg)
         console.error(`❌ 网络错误: ${file.file.name}`)
+        console.error(`📝 可能原因: 网络连接中断、服务器无响应或防火墙阻止`)
         alert(`镜像上传失败\n\n文件: ${file.file.name}\n错误: ${errorMsg}`)
         reject(new Error(errorMsg))
       })
@@ -143,10 +167,17 @@ export const useFileUpload = () => {
         const errorMsg = '上传超时，请检查网络连接'
         onStatusChange('error', errorMsg)
         console.error(`❌ 上传超时: ${file.file.name}`)
+        console.error(`📝 超时时间: 30分钟`)
+        console.error(`📝 文件大小: ${(file.file.size / 1024 / 1024).toFixed(2)}MB`)
         alert(`镜像上传失败\n\n文件: ${file.file.name}\n错误: ${errorMsg}`)
         reject(new Error(errorMsg))
       })
 
+      console.log(`🔄 开始上传请求: ${file.file.name}`)
+      console.log(`📝 文件大小: ${(file.file.size / 1024 / 1024).toFixed(2)}MB`)
+      console.log(`📝 目标项目: ${config.project}`)
+      console.log(`📝 Harbor 地址: ${config.harborUrl}`)
+      
       xhr.open('POST', '/api/docker/upload')
       xhr.timeout = 30 * 60 * 1000
       xhr.send(formData)

@@ -4,6 +4,7 @@ import { useFileManager } from './hooks/useFileManager'
 import { useProjectManager } from './hooks/useProjectManager'
 import { useFileUpload } from './hooks/useFileUpload'
 import type { UploadConfig } from './hooks/useFileUpload'
+import { SystemAPI } from '../../api/client'
 
 import InfoBox from './InfoBox'
 import ProjectSelector from './ProjectSelector'
@@ -59,12 +60,23 @@ export default function Upload() {
       const permissionData = await permissionRes.json()
 
       if (!permissionData.success) {
+        console.error(`❌ 权限检查失败: 用户 ${config.username} 无权限上传到项目 ${config.project}`)
+        await SystemAPI.record(config.username, 'upload_permission_denied', { 
+          project: config.project,
+          message: permissionData.message 
+        }, false)
         alert(permissionData.message || '您没有权限上传镜像到此项目')
         return false
       }
+      
+      console.log(`✅ 权限检查通过: 用户 ${config.username} 可以上传到项目 ${config.project}`)
       return true
     } catch (error) {
       console.error('权限校验失败:', error)
+      await SystemAPI.record(config.username, 'upload_permission_check_error', { 
+        project: config.project,
+        error: error instanceof Error ? error.message : '未知错误'
+      }, false)
       alert('权限校验失败，请稍后重试')
       return false
     }
@@ -100,15 +112,33 @@ export default function Upload() {
 
     updateFileStatus(index, 'uploading', 0)
 
+    console.log(`🚀 开始上传镜像: ${currentFile.file.name} 到项目 ${selectedProject}`)
+    await SystemAPI.record(cfg.username, 'upload_start', { 
+      filename: currentFile.file.name, 
+      project: selectedProject,
+      size: currentFile.file.size 
+    }, true)
+
     try {
-      await uploadSingleFile(
+      const result = await uploadSingleFile(
         currentFile,
         config,
         (progress) => updateFileProgress(index, progress),
         (status, errorMessage) => updateFileStatus(index, status, status === 'completed' ? 100 : undefined, errorMessage)
       )
+      
+      console.log(`✅ 镜像上传成功: ${currentFile.file.name}`)
+      await SystemAPI.record(cfg.username, 'upload_success', { 
+        filename: currentFile.file.name, 
+        project: selectedProject 
+      }, true)
     } catch (error: any) {
       console.error(`❌ 上传文件异常: ${currentFile.file.name}`, error)
+      await SystemAPI.record(cfg.username, 'upload_failed', { 
+        filename: currentFile.file.name, 
+        project: selectedProject,
+        error: error.message || '未知错误'
+      }, false)
     }
   }
 
@@ -133,26 +163,42 @@ export default function Upload() {
 
     setIsUploading(true)
 
-    for (let i = 0; i < files.length; i++) {
-      const currentFile = files[i]
+    const pendingFiles = files.filter(f => f.status !== 'completed' && f.status !== 'uploading' && f.file.size > 0)
+    console.log(`🚀 开始批量上传 ${pendingFiles.length} 个镜像到项目 ${selectedProject}`)
+    await SystemAPI.record(cfg.username, 'upload_batch_start', { 
+      project: selectedProject,
+      fileCount: pendingFiles.length,
+      files: pendingFiles.map(f => f.file.name)
+    }, true)
 
+    let successCount = 0
+    let failCount = 0
+
+    const uploadPromises = files.map(async (currentFile, i) => {
       if (currentFile.status === 'completed') {
         console.log(`跳过已完成的文件: ${currentFile.file.name}`)
-        continue
+        return
       }
 
       if (currentFile.status === 'uploading') {
         console.log(`跳过正在上传的文件: ${currentFile.file.name}`)
-        continue
+        return
       }
 
       if (currentFile.file.size === 0 || (currentFile.file instanceof File && currentFile.file.size > 0 && currentFile.file.lastModified === 0)) { 
         console.log(`跳过占位文件（从持久化恢复）: ${currentFile.file.name}`)
         updateFileStatus(i, 'error', undefined, '文件已丢失，请重新添加')
-        continue
+        return
       }
 
       updateFileStatus(i, 'uploading', 0)
+
+      console.log(`📤 上传镜像: ${currentFile.file.name}`)
+      await SystemAPI.record(cfg.username, 'upload_start', { 
+        filename: currentFile.file.name, 
+        project: selectedProject,
+        size: currentFile.file.size 
+      }, true)
 
       try {
         await uploadSingleFile(
@@ -161,10 +207,33 @@ export default function Upload() {
           (progress) => updateFileProgress(i, progress),
           (status, errorMessage) => updateFileStatus(i, status, status === 'completed' ? 100 : undefined, errorMessage)
         )
+        
+        successCount++
+        console.log(`✅ 镜像上传成功: ${currentFile.file.name}`)
+        await SystemAPI.record(cfg.username, 'upload_success', { 
+          filename: currentFile.file.name, 
+          project: selectedProject 
+        }, true)
       } catch (error: any) {
+        failCount++
         console.error(`❌ 上传文件异常: ${currentFile.file.name}`, error)
+        await SystemAPI.record(cfg.username, 'upload_failed', { 
+          filename: currentFile.file.name, 
+          project: selectedProject,
+          error: error.message || '未知错误'
+        }, false)
       }
-    }
+    })
+
+    await Promise.all(uploadPromises)
+
+    console.log(`📊 批量上传完成: 成功 ${successCount} 个，失败 ${failCount} 个`)
+    await SystemAPI.record(cfg.username, 'upload_batch_complete', { 
+      project: selectedProject,
+      successCount,
+      failCount,
+      totalCount: pendingFiles.length
+    }, failCount === 0)
 
     setIsUploading(false)
   }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { loadConfig } from '../../../store/config'
 import { HarborAPI } from '../../../api/client'
 
-const STORAGE_KEY = 'harbor_upload_state'
+const STORAGE_KEY = 'harbor_upload_project_state'
 
 export const useProjectManager = () => {
   const [selectedProject, setSelectedProject] = useState('')
@@ -20,11 +20,14 @@ export const useProjectManager = () => {
 
   const saveSelectedProject = () => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      const state = stored ? JSON.parse(stored) : {}
-      state.selectedProject = selectedProject
-      state.timestamp = Date.now()
+      const state = {
+        selectedProject: selectedProject,
+        timestamp: Date.now()
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+      if (selectedProject) {
+        console.log(`💾 已保存选中的项目: ${selectedProject}`)
+      }
     } catch (error) {
       console.error('保存项目选择失败:', error)
     }
@@ -33,13 +36,20 @@ export const useProjectManager = () => {
   const loadSelectedProject = () => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
-      if (!stored) return
+      if (!stored) {
+        console.log('📂 没有找到保存的项目选择')
+        return
+      }
 
       const state = JSON.parse(stored)
       const dayAgo = Date.now() - 24 * 60 * 60 * 1000
 
       if (state.timestamp && state.timestamp > dayAgo && state.selectedProject) {
         setSelectedProject(state.selectedProject)
+        console.log(`📂 已恢复选中的项目: ${state.selectedProject}`)
+      } else {
+        console.log('📂 项目选择已过期，已清除')
+        localStorage.removeItem(STORAGE_KEY)
       }
     } catch (error) {
       console.error('加载项目选择失败:', error)

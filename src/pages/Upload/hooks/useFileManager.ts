@@ -3,7 +3,7 @@ import type { FileItem } from './useFileUpload'
 
 const MAX_UPLOAD_COUNT = 10
 const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024
-const STORAGE_KEY = 'harbor_upload_state'
+const STORAGE_KEY = 'harbor_upload_files_state'
 
 interface StoredFileItem {
   fileName: string
